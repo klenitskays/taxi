@@ -1,13 +1,13 @@
-package com.example.taxi;
+package com.example.driver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TaxiApplication {
+public class DriverApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TaxiApplication.class, args);
+		SpringApplication.run(DriverApplication.class, args);
 	}
 
 }
