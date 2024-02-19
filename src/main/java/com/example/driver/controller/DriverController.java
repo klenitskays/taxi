@@ -1,6 +1,6 @@
 package com.example.driver.controller;
 
-import com.example.driver.Driver;
+import com.example.driver.entity.Driver;
 import com.example.driver.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

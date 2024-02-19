@@ -1,4 +1,4 @@
-package com.example.driver;
+package com.example.driver.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

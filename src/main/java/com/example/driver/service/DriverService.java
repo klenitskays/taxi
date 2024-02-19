@@ -1,6 +1,6 @@
 package com.example.driver.service;
 
-import com.example.driver.Driver;
+import com.example.driver.entity.Driver;
 import com.example.driver.repo.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

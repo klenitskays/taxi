@@ -1,6 +1,6 @@
 package com.example.driver.repo;
 
-import com.example.driver.Driver;
+import com.example.driver.entity.Driver;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
