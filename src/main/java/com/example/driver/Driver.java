@@ -1,10 +1,12 @@
 package com.example.driver;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 
 @Entity
 @Table(name = "driver")
+@Data
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
