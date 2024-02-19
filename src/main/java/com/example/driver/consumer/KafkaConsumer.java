@@ -8,6 +8,6 @@ public class KafkaConsumer {
     @KafkaListener(topics = "driver-registration", groupId = "my-group")
     public void handleDriverRegistration(String message) {
         System.out.println("Received driver registration message: " + message);
-        // Обработка сообщения о регистрации водителя
+       
     }
 }
