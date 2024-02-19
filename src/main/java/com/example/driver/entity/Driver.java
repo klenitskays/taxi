@@ -30,7 +30,5 @@ public class Driver {
     @Column(name = "is_available")
     private boolean isAvailable;
 
-    // Конструкторы, геттеры, сеттеры и другие методы
 
-    //...
 }
