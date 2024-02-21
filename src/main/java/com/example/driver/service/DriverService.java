@@ -3,9 +3,9 @@ package com.example.driver.service;
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.entity.Driver;
 import com.example.driver.repo.DriverRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
