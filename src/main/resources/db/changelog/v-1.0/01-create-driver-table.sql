@@ -9,5 +9,5 @@ CREATE TABLE driver
     is_available BOOLEAN,
     PRIMARY KEY (id)
 )engine=InnoDB
-#что за go и почему не работает postgresql диалект
+
 #GO

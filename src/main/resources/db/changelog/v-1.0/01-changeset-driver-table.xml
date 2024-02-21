@@ -3,9 +3,8 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-#изменить потом id и admin
-    <changeSet id="0" author="admin">
-        <sqlFile dbms="mysql"
+    <changeSet id="3" author="Sonya">
+        <sqlFile dbms="postgresql"
                  encoding="utf8"
                  endDelimiter="\nGO"
                  relativeToChangelogFile="true"
@@ -13,7 +12,7 @@
                  stripComments="true"
                  path="01-create-driver-table.sql"/>
         <rollback>
-            <sqlFile dbms="mysql"
+            <sqlFile dbms="postgresql"
                      encoding="utf8"
                      endDelimiter="\nGO"
                      relativeToChangelogFile="true"
