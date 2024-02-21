@@ -5,7 +5,7 @@ CREATE TABLE driver (
                         contact_info VARCHAR(255),
                         latitude DOUBLE,
                         longitude DOUBLE,
-                        is_available BOOLEAN,
+                        isAvailable BOOLEAN,
                         PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 /*диалект postgresql не работает, сработал mysql*/

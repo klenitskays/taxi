@@ -1,4 +1,4 @@
-package com.example.driver.consumer;
+/*package com.example.driver.consumer;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -10,4 +10,4 @@ public class KafkaConsumer {
         System.out.println("Received driver registration message: " + message);
        
     }
-}
+}*/

@@ -3,91 +3,63 @@ package com.example.driver.service;
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.entity.Driver;
 import com.example.driver.repo.DriverRepository;
-import jakarta.persistence.Entity;
-import lombok.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-@Entity
-@Setter
-@Getter
-@Builder
+
 @Service
-@AllArgsConstructor
 public class DriverService {
 
     private final DriverRepository driverRepository;
 
-    public List<DriverDTO> getAllDrivers() {
-        List<Driver> drivers = driverRepository.findAll();
-        return drivers.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public DriverService(DriverRepository driverRepository) {
+        this.driverRepository = driverRepository;
     }
 
-    public Optional<DriverDTO> getDriverById(int id) {
-        return driverRepository.findById(id)
-                .map(this::convertToDTO);
+    public Driver create(DriverDTO dto) {
+        Driver driver = new Driver();
+        driver.setId(dto.getId());
+        return getDriver(dto, driver);
     }
 
-    public DriverDTO saveDriver(DriverDTO driverDTO) {
-        Driver driver = convertToEntity(driverDTO);
-        return convertToDTO(driverRepository.save(driver));
+    @NotNull
+    private Driver getDriver(DriverDTO dto, Driver driver) {
+        driver.setFirstName(dto.getFirstName());
+        driver.setLastName(dto.getLastName());
+        driver.setContactInfo(dto.getContactInfo());
+        driver.setLatitude(dto.getLatitude());
+        driver.setLongitude(dto.getLongitude());
+        driver.setAvailable(dto.isAvailable());
+        return driverRepository.save(driver);
     }
 
-    public void updateDriver(DriverDTO driverDTO) {
-        Driver driver = convertToEntity(driverDTO);
-        driverRepository.save(driver);
+    public List<Driver> readAll() {
+        return driverRepository.findAll();
     }
 
-    public void deleteDriverById(int id) {
+    public Driver readById(Long id) {
+        return driverRepository.findById(id).orElse(null);
+    }
+
+    public List<Driver> readByLastName(String lastName) {
+        return driverRepository.findByLastName(lastName);
+    }
+
+
+    public List<Driver> isAvailable() {
+    return driverRepository.findByIsAvailableIsTrue();
+}
+
+    public Driver update(DriverDTO dto, Long id) {
+        Driver driver = driverRepository.findById(id).orElse(null);
+        if (driver != null) {
+            return getDriver(dto, driver);
+        }
+        return null;
+    }
+
+    public void delete(Long id) {
         driverRepository.deleteById(id);
-    }
-
-    public List<DriverDTO> getDriversByFirstName(String firstName) {
-        List<Driver> drivers = driverRepository.findByFirstName(firstName);
-        return drivers.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<DriverDTO> getDriversByLastName(String lastName) {
-        List<Driver> drivers = driverRepository.findByLastName(lastName);
-        return drivers.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<DriverDTO> getDriversByFullName(String firstName, String lastName) {
-        List<Driver> drivers = driverRepository.findByFirstNameAndLastName(firstName, lastName);
-        return drivers.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private DriverDTO convertToDTO(Driver driver) {
-        return DriverDTO.builder()
-                .id(driver.getId())
-                .firstName(driver.getFirstName())
-                .lastName(driver.getLastName())
-                .contactInfo(driver.getContactInfo())
-                .latitude(driver.getLatitude())
-                .longitude(driver.getLongitude())
-                .available(driver.isAvailable())
-                .build();
-    }
-
-    private Driver convertToEntity(DriverDTO driverDTO) {
-        return Driver.builder()
-                .id(driverDTO.getId())
-                .firstName(driverDTO.getFirstName())
-                .lastName(driverDTO.getLastName())
-                .contactInfo(driverDTO.getContactInfo())
-                .latitude(driverDTO.getLatitude())
-                .longitude(driverDTO.getLongitude())
-                .available(driverDTO.isAvailable())
-                .build();
     }
 }

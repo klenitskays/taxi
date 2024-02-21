@@ -1,8 +1,6 @@
 package com.example.driver.entity;
 
-import com.fasterxml.jackson.core.JsonToken;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 
@@ -29,7 +27,7 @@ public class Driver {
     @Column(name = "longitude")
     private double longitude;
 
-    @Column(name = "is_available")
+    @Column(name = "isAvailable")
     private boolean isAvailable;
 
 
