@@ -3,63 +3,26 @@ package com.example.driver.service;
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.entity.Driver;
 import com.example.driver.repo.DriverRepository;
-import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Service
-public class DriverService {
+public interface DriverService {
 
-    private final DriverRepository driverRepository;
+    Driver create(DriverDTO dto);
 
-    public DriverService(DriverRepository driverRepository) {
-        this.driverRepository = driverRepository;
-    }
+    List<Driver> readAll();
 
-    public Driver create(DriverDTO dto) {
-        Driver driver = new Driver();
-        driver.setId(dto.getId());
-        return getDriver(dto, driver);
-    }
+    Driver readById(Long id);
+
+    List<Driver> readByLastName(String lastName);
+
+    List<Driver> isAvailable();
+
+    Driver update(DriverDTO dto, Long id);
+
+    void delete(Long id);
 
     @NotNull
-    private Driver getDriver(DriverDTO dto, Driver driver) {
-        driver.setFirstName(dto.getFirstName());
-        driver.setLastName(dto.getLastName());
-        driver.setContactInfo(dto.getContactInfo());
-        driver.setLatitude(dto.getLatitude());
-        driver.setLongitude(dto.getLongitude());
-        driver.setAvailable(dto.isAvailable());
-        return driverRepository.save(driver);
-    }
-
-    public List<Driver> readAll() {
-        return driverRepository.findAll();
-    }
-
-    public Driver readById(Long id) {
-        return driverRepository.findById(id).orElse(null);
-    }
-
-    public List<Driver> readByLastName(String lastName) {
-        return driverRepository.findByLastName(lastName);
-    }
-
-
-    public List<Driver> isAvailable() {
-    return driverRepository.findByIsAvailableIsTrue();
-}
-
-    public Driver update(DriverDTO dto, Long id) {
-        Driver driver = driverRepository.findById(id).orElse(null);
-        if (driver != null) {
-            return getDriver(dto, driver);
-        }
-        return null;
-    }
-
-    public void delete(Long id) {
-        driverRepository.deleteById(id);
-    }
+    Driver getDriver(DriverDTO dto, Driver driver, DriverRepository driverRepository);
 }
