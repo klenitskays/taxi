@@ -2,27 +2,18 @@ package com.example.driver.service;
 
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.entity.Driver;
-import com.example.driver.repo.DriverRepository;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface DriverService {
-
-    Driver create(DriverDTO dto);
-
-    List<Driver> readAll();
-
-    Driver readById(Long id);
-
-    List<Driver> readByLastName(String lastName);
-
-    List<Driver> isAvailable();
-
-    Driver update(DriverDTO dto, Long id);
-
+    DriverDTO create(DriverDTO dto);
+    List<DriverDTO> readAll();
+    DriverDTO readById(Long id);
+    List<DriverDTO> readByLastName(String lastName);
+    List<DriverDTO> isAvailable();
+    DriverDTO update(DriverDTO dto, Long id);
     void delete(Long id);
-
     @NotNull
-    Driver getDriver(DriverDTO dto, Driver driver, DriverRepository driverRepository);
+    DriverDTO getDriver(DriverDTO dto, Driver driver);
 }

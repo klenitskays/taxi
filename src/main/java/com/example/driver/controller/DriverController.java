@@ -1,13 +1,14 @@
 package com.example.driver.controller;
 
 import com.example.driver.dto.DriverDTO;
-import com.example.driver.entity.Driver;
+import com.example.driver.mapper.DriverMapper;
 import com.example.driver.service.DriverService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/driver")
@@ -15,35 +16,35 @@ public class DriverController {
 
     private final DriverService driverService;
 
-    public DriverController(DriverService driverService) {
+    public DriverController(DriverService driverService, DriverMapper driverMapper) {
         this.driverService = driverService;
     }
 
     @PostMapping
-    public ResponseEntity<Driver> create(@RequestBody DriverDTO dto) {
-        Driver driver = driverService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(driver);
+    public ResponseEntity<DriverDTO> create(@RequestBody DriverDTO dto) {
+        DriverDTO createdDriverDTO = driverService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdDriverDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<Driver>> readAll() {
-        List<Driver> drivers = driverService.readAll();
+    public ResponseEntity<List<DriverDTO>> readAll() {
+        List<DriverDTO> drivers = driverService.readAll();
         return ResponseEntity.ok(drivers);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Driver> readById(@PathVariable Long id) {
-        Driver driver = driverService.readById(id);
-        if (driver != null) {
-            return ResponseEntity.ok(driver);
+    public ResponseEntity<DriverDTO> readById(@PathVariable Long id) {
+        DriverDTO driverDTO = driverService.readById(id);
+        if (driverDTO != null) {
+            return ResponseEntity.ok(driverDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/lastName/{lastName}")
-    public ResponseEntity<List<Driver>> readByLastName(@PathVariable String lastName) {
-        List<Driver> drivers = driverService.readByLastName(lastName);
+    public ResponseEntity<List<DriverDTO>> readByLastName(@PathVariable String lastName) {
+        List<DriverDTO> drivers = driverService.readByLastName(lastName);
         if (!drivers.isEmpty()) {
             return ResponseEntity.ok(drivers);
         } else {
@@ -52,19 +53,26 @@ public class DriverController {
     }
 
     @GetMapping("/isAvailable")
-    public ResponseEntity<List<Driver>> getAvailableDrivers() {
-        List<Driver> isAvailableDrivers = driverService.isAvailable();
-        return ResponseEntity.ok(isAvailableDrivers);
+    public ResponseEntity<List<DriverDTO>> getAvailableDrivers() {
+        List<DriverDTO> driverDTOs = driverService.isAvailable().stream()
+                .map(driver -> {
+                    DriverDTO driverDTO = new DriverDTO();
+                    driverDTO.setFirstName(driver.getFirstName());
+                    driverDTO.setLastName(driver.getLastName());
+                    return driverDTO;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(driverDTOs);
     }
 
     @PutMapping("/id/{id}")
-    public ResponseEntity<Driver> update(
+    public ResponseEntity<DriverDTO> update(
             @RequestBody DriverDTO dto,
             @PathVariable Long id
     ) {
-        Driver updatedDriver = driverService.update(dto, id);
-        if (updatedDriver != null) {
-            return ResponseEntity.ok(updatedDriver);
+        DriverDTO updatedDriverDTO = driverService.update(dto, id);
+        if (updatedDriverDTO != null) {
+            return ResponseEntity.ok(updatedDriverDTO);
         } else {
             return ResponseEntity.notFound().build();
         }

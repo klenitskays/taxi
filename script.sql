@@ -9,4 +9,3 @@ CREATE TABLE driver
     is_available BOOLEAN,
     PRIMARY KEY (id)
 )
-/*диалект postgresql не работает, сработал mysql*/
