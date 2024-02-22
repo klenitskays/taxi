@@ -39,12 +39,7 @@ public class DriverServiceImpl implements DriverService {
         // Возвращение созданного объекта DriverDTO
         return createdDTO;
     }
- /* @Override
-     public DriverDTO create(DriverDTO dto) {
-         Driver driver = driverMapper.toDriver(dto);
-         Driver savedDriver = driverRepository.save(driver);
-         return driverMapper.toDriverDTO(savedDriver);
-     }*/
+
     @Override
     public List<DriverDTO> readAll() {
         List<Driver> drivers = driverRepository.findAll();
