@@ -10,5 +10,7 @@ public class DriverDTO {
     private String contactInfo;
     private double latitude;
     private double longitude;
-    private boolean isAvailable;
+    private int rating;
+    private boolean available;
+
 }

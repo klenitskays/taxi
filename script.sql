@@ -6,6 +6,7 @@ CREATE TABLE driver
     contact_info VARCHAR(255),
     latitude     FLOAT,
     longitude    FLOAT,
-    is_available BOOLEAN,
+    available BOOLEAN,
+    rating       INTEGER,
     PRIMARY KEY (id)
 )

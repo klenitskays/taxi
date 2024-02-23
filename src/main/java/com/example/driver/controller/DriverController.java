@@ -70,8 +70,15 @@ public class DriverController {
             @RequestBody DriverDTO dto,
             @PathVariable Long id
     ) {
-        DriverDTO updatedDriverDTO = driverService.update(dto, id);
-        if (updatedDriverDTO != null) {
+        DriverDTO existingDriverDTO = driverService.readById(id);
+        if (existingDriverDTO != null) {
+            existingDriverDTO.setFirstName(dto.getFirstName());
+            existingDriverDTO.setLastName(dto.getLastName());
+            existingDriverDTO.setLatitude(dto.getLatitude());
+            existingDriverDTO.setLongitude(dto.getLongitude());
+            existingDriverDTO.setAvailable(dto.isAvailable());
+            existingDriverDTO.setRating(dto.getRating());
+            DriverDTO updatedDriverDTO = driverService.update(existingDriverDTO, id);
             return ResponseEntity.ok(updatedDriverDTO);
         } else {
             return ResponseEntity.notFound().build();

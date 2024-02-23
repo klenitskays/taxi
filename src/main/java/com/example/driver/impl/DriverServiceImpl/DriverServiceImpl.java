@@ -22,22 +22,11 @@ public class DriverServiceImpl implements DriverService {
         this.driverRepository = driverRepository;
         this.driverMapper = driverMapper;
     }
-
-
-
     @Override
     public DriverDTO create(DriverDTO dto) {
-        // Преобразование DriverDTO в объект Driver
         Driver driver = driverMapper.toDriver(dto);
-
-        // Логика сохранения водителя в базе данных
         Driver savedDriver = driverRepository.save(driver);
-
-        // Преобразование сохраненного объекта Driver в DriverDTO
-        DriverDTO createdDTO = driverMapper.toDriverDTO(savedDriver);
-
-        // Возвращение созданного объекта DriverDTO
-        return createdDTO;
+        return driverMapper.toDriverDTO(savedDriver);
     }
 
     @Override
@@ -67,7 +56,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<DriverDTO> isAvailable() {
-        List<Driver> isAvailableDrivers = driverRepository.findByIsAvailableIsTrue();
+        List<Driver> isAvailableDrivers = driverRepository.findByAvailableIsTrue();
         return isAvailableDrivers.stream()
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());
@@ -98,6 +87,7 @@ public class DriverServiceImpl implements DriverService {
         driver.setLatitude(dto.getLatitude());
         driver.setLongitude(dto.getLongitude());
         driver.setAvailable(dto.isAvailable());
+        driver.setRating(dto.getRating());
         Driver savedDriver = driverRepository.save(driver);
         return driverMapper.toDriverDTO(savedDriver);
     }

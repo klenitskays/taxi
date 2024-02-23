@@ -27,8 +27,11 @@ public class Driver {
     @Column(name = "longitude")
     private double longitude;
 
-    @Column(name = "isAvailable")
-    private boolean isAvailable;
+    @Column(name = "available")
+    private boolean available;
+
+    @Column(name = "rating")
+    private int rating;
 
 
 }
