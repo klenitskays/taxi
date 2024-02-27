@@ -1,26 +1,23 @@
 package com.example.driver.controller;
 
 import com.example.driver.dto.DriverDTO;
-import com.example.driver.entity.Driver;
-import com.example.driver.mapper.DriverMapper;
 import com.example.driver.service.DriverService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+@Data
 @RestController
 @RequestMapping("/driver")
+@RequiredArgsConstructor
 public class DriverController {
 
     private final DriverService driverService;
-    private final DriverMapper driverMapper;
-
-    public DriverController(DriverService driverService, DriverMapper driverMapper) {
-        this.driverService = driverService;
-        this.driverMapper = driverMapper;
-    }
 
     @PostMapping
     public ResponseEntity<DriverDTO> create(@RequestBody DriverDTO dto) {
@@ -56,10 +53,7 @@ public class DriverController {
 
     @GetMapping("/findAvailableDrivers")
     public ResponseEntity<List<DriverDTO>> getAvailableDrivers() {
-        List<DriverDTO> driverDTOs = driverService.findAvailableDrivers()
-                .stream()
-                .map(driverService::mapToDriverDTO)
-                .collect(Collectors.toList());
+        List<DriverDTO> driverDTOs = driverService.findAvailableDrivers();
         return ResponseEntity.ok(driverDTOs);
     }
 
