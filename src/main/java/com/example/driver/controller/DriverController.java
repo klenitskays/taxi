@@ -1,6 +1,7 @@
 package com.example.driver.controller;
 
 import com.example.driver.dto.DriverDTO;
+import com.example.driver.entity.Driver;
 import com.example.driver.mapper.DriverMapper;
 import com.example.driver.service.DriverService;
 import org.springframework.http.HttpStatus;
@@ -9,15 +10,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/driver")
 public class DriverController {
 
     private final DriverService driverService;
+    private final DriverMapper driverMapper;
 
     public DriverController(DriverService driverService, DriverMapper driverMapper) {
         this.driverService = driverService;
+        this.driverMapper = driverMapper;
     }
 
     @PostMapping
@@ -52,15 +54,11 @@ public class DriverController {
         }
     }
 
-    @GetMapping("/isAvailable")
+    @GetMapping("/findAvailableDrivers")
     public ResponseEntity<List<DriverDTO>> getAvailableDrivers() {
-        List<DriverDTO> driverDTOs = driverService.isAvailable().stream()
-                .map(driver -> {
-                    DriverDTO driverDTO = new DriverDTO();
-                    driverDTO.setFirstName(driver.getFirstName());
-                    driverDTO.setLastName(driver.getLastName());
-                    return driverDTO;
-                })
+        List<DriverDTO> driverDTOs = driverService.findAvailableDrivers()
+                .stream()
+                .map(driverService::mapToDriverDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(driverDTOs);
     }
@@ -70,15 +68,8 @@ public class DriverController {
             @RequestBody DriverDTO dto,
             @PathVariable Long id
     ) {
-        DriverDTO existingDriverDTO = driverService.readById(id);
-        if (existingDriverDTO != null) {
-            existingDriverDTO.setFirstName(dto.getFirstName());
-            existingDriverDTO.setLastName(dto.getLastName());
-            existingDriverDTO.setLatitude(dto.getLatitude());
-            existingDriverDTO.setLongitude(dto.getLongitude());
-            existingDriverDTO.setAvailable(dto.isAvailable());
-            existingDriverDTO.setRating(dto.getRating());
-            DriverDTO updatedDriverDTO = driverService.update(existingDriverDTO, id);
+        DriverDTO updatedDriverDTO = driverService.update(dto, id);
+        if (updatedDriverDTO != null) {
             return ResponseEntity.ok(updatedDriverDTO);
         } else {
             return ResponseEntity.notFound().build();

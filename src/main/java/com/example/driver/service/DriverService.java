@@ -11,7 +11,8 @@ public interface DriverService {
     List<DriverDTO> readAll();
     DriverDTO readById(Long id);
     List<DriverDTO> readByLastName(String lastName);
-    List<DriverDTO> isAvailable();
+    List<DriverDTO> findAvailableDrivers();
+    DriverDTO mapToDriverDTO(Driver driver);
     DriverDTO update(DriverDTO dto, Long id);
     void delete(Long id);
     @NotNull
