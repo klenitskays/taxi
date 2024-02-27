@@ -5,6 +5,7 @@ import com.example.driver.entity.Driver;
 import com.example.driver.mapper.DriverMapper;
 import com.example.driver.repo.DriverRepository;
 import com.example.driver.service.DriverService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -13,16 +14,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
     private final DriverMapper driverMapper;
 
-
-    public DriverServiceImpl(DriverRepository driverRepository, DriverMapper driverMapper) {
-        this.driverRepository = driverRepository;
-        this.driverMapper = driverMapper;
-    }
     @Override
     public DriverDTO create(DriverDTO dto) {
         Driver driver = driverMapper.toDriver(dto);
@@ -40,9 +37,12 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public DriverDTO readById(Long id) {
-        Driver driver = driverRepository.findById(id).orElse(null);
+        Optional<Driver> optionalDriver = driverRepository.findById(id);
+        if (optionalDriver.isPresent()) {
+            Driver driver = optionalDriver.get();
             return driverMapper.toDriverDTO(driver);
-
+        }
+        return null;
     }
 
     @Override
@@ -56,33 +56,24 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public List<DriverDTO> findAvailableDrivers() {
         List<Driver> isAvailableDrivers = driverRepository.findByAvailableIsTrue();
-        return driverMapper.toDriverDTO(isAvailableDrivers);
-    }
-    @Override
-    public DriverDTO mapToDriverDTO(Driver driver) {
-        return driverMapper.toDriverDTO(driver);
-    }
-    public void updateDriverFromDTO(DriverDTO dto, Driver driver) {
-        driver.setFirstName(dto.getFirstName());
-        driver.setLastName(dto.getLastName());
-        driver.setContactInfo(dto.getContactInfo());
-        driver.setLatitude(dto.getLatitude());
-        driver.setLongitude(dto.getLongitude());
-        driver.setAvailable(dto.isAvailable());
-        driver.setRating(dto.getRating());
-    }
-    @Override
-    public DriverDTO update(DriverDTO dto, Long id) {
-        Optional<Driver> optionalDriver = driverRepository.findById(id);
-        if (optionalDriver.isPresent()) {
-            Driver existingDriver = optionalDriver.get();
-            driverMapper.updateDriverFromDTO(dto, existingDriver);
-            Driver savedDriver = driverRepository.save(existingDriver);
-            return driverMapper.toDriverDTO(savedDriver);
-        }
-        return null;
+        return isAvailableDrivers.stream()
+                .map(driverMapper::toDriverDTO)
+                .collect(Collectors.toList());
     }
 
+
+
+
+    @Override
+    public DriverDTO update(DriverDTO dto, Long id) {
+        return driverRepository.findById(id)
+                .map(existingDriver -> {
+                    driverMapper.updateDriverFromDTO(dto, existingDriver);
+                    Driver savedDriver = driverRepository.save(existingDriver);
+                    return driverMapper.toDriverDTO(savedDriver);
+                })
+                .orElse(null);
+    }
     @Override
     public void delete(Long id) {
         driverRepository.deleteById(id);

@@ -3,14 +3,13 @@ package com.example.driver.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
 @Entity
 @Table(name = "driver")
 @Data
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -22,16 +21,15 @@ public class Driver {
     private String contactInfo;
 
     @Column(name = "latitude")
-    private double latitude;
+    private Double latitude;
 
     @Column(name = "longitude")
-    private double longitude;
+    private Double longitude;
 
     @Column(name = "available")
-    private boolean available;
+    private Boolean available;
 
     @Column(name = "rating")
-    private int rating;
-
+    private Integer rating;
 
 }
