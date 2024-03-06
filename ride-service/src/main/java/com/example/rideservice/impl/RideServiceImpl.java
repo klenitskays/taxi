@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,13 @@ public class RideServiceImpl implements RideService {
 
         return rideMapper.toRideDTO(savedRide);
     }
-
+    @Override
+    public List<RideDTO> readAll() {
+        List<Ride> rides = rideRepository.findAll();
+        return rides.stream()
+                .map(rideMapper::toRideDTO)
+                .collect(Collectors.toList());
+    }
     @Override
     public RideDTO getRideById(Integer id) {
         Optional<Ride> rideOptional = rideRepository.findById(id);
@@ -67,19 +75,46 @@ public class RideServiceImpl implements RideService {
     public void deleteRide(Integer id) {
         rideRepository.deleteById(id);
     }
-
     @Override
     public RideDTO updateRideStatus(Integer rideId, RideStatus status) {
-        return null;
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (rideOptional.isPresent()) {
+            Ride ride = rideOptional.get();
+            ride.setStatus(status);
+
+            Ride updatedRide = rideRepository.save(ride);
+            return rideMapper.toRideDTO(updatedRide);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public RideDTO cancelRide(Integer rideId) {
-        return null;
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (rideOptional.isPresent()) {
+            Ride ride = rideOptional.get();
+            ride.setStatus(RideStatus.CANCELLED);
+
+            Ride updatedRide = rideRepository.save(ride);
+            return rideMapper.toRideDTO(updatedRide);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public RideDTO completeRide(Integer rideId) {
-        return null;
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (rideOptional.isPresent()) {
+            Ride ride = rideOptional.get();
+            ride.setStatus(RideStatus.COMPLETED);
+            ride.setEndTime(LocalDateTime.now());
+
+            Ride updatedRide = rideRepository.save(ride);
+            return rideMapper.toRideDTO(updatedRide);
+        } else {
+            return null;
+        }
     }
 }

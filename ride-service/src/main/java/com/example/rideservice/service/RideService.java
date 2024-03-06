@@ -4,9 +4,12 @@ import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.status.RideStatus;
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 public interface RideService {
 
     RideDTO createRide(@Valid RideDTO rideDTO);
+    List<RideDTO> readAll();
 
     RideDTO getRideById(Integer id);
 
