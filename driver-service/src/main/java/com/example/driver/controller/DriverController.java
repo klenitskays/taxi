@@ -2,7 +2,6 @@ package com.example.driver.controller;
 
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.service.DriverService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+
 @RestController
 @RequestMapping("/driver")
 @RequiredArgsConstructor

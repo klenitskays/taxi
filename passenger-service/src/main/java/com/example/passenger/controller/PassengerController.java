@@ -2,7 +2,6 @@ package com.example.passenger.controller;
 
 import com.example.passenger.dto.PassengerDTO;
 import com.example.passenger.service.PassengerService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@Data
+
 @RestController
 @RequestMapping("/passenger")
 @RequiredArgsConstructor
