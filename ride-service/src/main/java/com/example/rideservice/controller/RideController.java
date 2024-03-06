@@ -1,64 +1,68 @@
 package com.example.rideservice.controller;
 
-import com.example.rideservice.entity.Ride;
+import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.service.RideService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-
 @RestController
-@RequestMapping("/rides")
+@RequestMapping("/ride")
+@RequiredArgsConstructor
 public class RideController {
 
     private final RideService rideService;
 
-    @Autowired
-    public RideController(RideService rideService) {
-        this.rideService = rideService;
-    }
-
     @PostMapping
-    public ResponseEntity<Ride> createRide(@RequestParam("passengerId") Integer passengerId,
-                                           @RequestParam("startLatitude") Double startLatitude,
-                                           @RequestParam("startLongitude") Double startLongitude,
-                                           @RequestParam("destinationLatitude") Double destinationLatitude,
-                                           @RequestParam("destinationLongitude") Double destinationLongitude) {
-        Ride ride = rideService.createRide(passengerId, startLatitude, startLongitude, destinationLatitude, destinationLongitude);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ride);
+    public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
+        RideDTO createdRideDTO = rideService.createRide(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
     }
 
-    @PostMapping("/{rideId}/approve")
-    public ResponseEntity<String> approveRide(@PathVariable("rideId") Long rideId) {
-        rideService.approveRide(rideId);
-        return ResponseEntity.ok("Ride approved");
+    @GetMapping("/id/{id}")
+    public ResponseEntity<RideDTO> getRideById(@PathVariable Integer id) {
+        RideDTO rideDTO = rideService.getRideById(id);
+        if (rideDTO != null) {
+            return ResponseEntity.ok(rideDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping("/{rideId}/start")
-    public ResponseEntity<String> startRide(@PathVariable("rideId") Long rideId) {
-        rideService.startRide(rideId);
-        return ResponseEntity.ok("Ride started");
+    @GetMapping("/passenger/{passengerId}")
+    public ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId) {
+        RideDTO rideDTO = rideService.getRideByPassengerId(passengerId);
+        if (rideDTO != null) {
+            return ResponseEntity.ok(rideDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping("/{rideId}/complete")
-    public ResponseEntity<String> completeRide(@PathVariable("rideId") Long rideId) {
-        rideService.completeRide(rideId);
-        return ResponseEntity.ok("Ride completed");
+    @GetMapping("/driver/{driverId}")
+    public ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId) {
+        RideDTO rideDTO = rideService.getRideByDriverId(driverId);
+        if (rideDTO != null) {
+            return ResponseEntity.ok(rideDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/{passengerId}/history")
-    public ResponseEntity<List<Ride>> getRideHistoryForPassenger(@PathVariable("passengerId") Long passengerId) {
-        List<Ride> rideHistory = rideService.getRideHistoryForPassenger(passengerId);
-        return ResponseEntity.ok(rideHistory);
+    @PutMapping("/id/{id}")
+    public ResponseEntity<RideDTO> updateRide(@RequestBody RideDTO dto, @PathVariable Integer id) {
+        RideDTO updatedRideDTO = rideService.updateRide(dto, id);
+        if (updatedRideDTO != null) {
+            return ResponseEntity.ok(updatedRideDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/nearest")
-    public ResponseEntity<List<Ride>> findNearestRides(@RequestParam("latitude") Double latitude,
-                                                       @RequestParam("longitude") Double longitude) {
-        List<Ride> nearestRides = rideService.findNearestRidesByLocation(latitude, longitude);
-        return ResponseEntity.ok(nearestRides);
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<Void> deleteRide(@PathVariable Integer id) {
+        rideService.deleteRide(id);
+        return ResponseEntity.noContent().build();
     }
 }

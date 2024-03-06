@@ -1,73 +1,26 @@
 package com.example.rideservice.service;
 
-import com.example.rideservice.entity.Ride;
-import com.example.rideservice.repo.RideRepository;
+import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.status.RideStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
 
-import java.time.LocalDateTime;
-import java.util.List;
+public interface RideService {
 
-@Service
-public class RideService {
+    RideDTO createRide(@Valid RideDTO rideDTO);
 
-    private final RideRepository rideRepository;
+    RideDTO getRideById(Integer id);
 
-    @Autowired
-    public RideService(RideRepository rideRepository) {
-        this.rideRepository = rideRepository;
-    }
+    RideDTO getRideByPassengerId(Integer passengerId);
 
-    @Transactional
-    public Ride createRide(Integer passengerId, Double startLatitude, Double startLongitude,
-                           Double destinationLatitude, Double destinationLongitude) {
-        Ride ride = new Ride();
-        ride.setPassengerId(passengerId);
-        ride.setStartLatitude(startLatitude);
-        ride.setStartLongitude(startLongitude);
-        ride.setDestinationLatitude(destinationLatitude);
-        ride.setDestinationLongitude(destinationLongitude);
-        ride.setStatus(RideStatus.CREATED);
-        ride.setStartTime(LocalDateTime.now());
+    RideDTO getRideByDriverId(Integer driverId);
 
-        return rideRepository.save(ride);
-    }
+    RideDTO updateRide(@Valid RideDTO dto, Integer id);
 
-    @Transactional
-    public void approveRide(Long rideId) {
-        Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+    void deleteRide(Integer id);
 
-        ride.setStatus(RideStatus.ACCEPTED);
-        rideRepository.save(ride);
-    }
+    RideDTO updateRideStatus(Integer rideId, RideStatus status);
 
-    @Transactional
-    public void startRide(Long rideId) {
-        Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+    RideDTO cancelRide(Integer rideId);
 
-        ride.setStatus(RideStatus.IN_PROGRESS);
-        rideRepository.save(ride);
-    }
-
-    @Transactional
-    public void completeRide(Long rideId) {
-        Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
-
-        ride.setStatus(RideStatus.COMPLETED);
-        ride.setEndTime(LocalDateTime.now());
-        rideRepository.save(ride);
-    }
-
-    public List<Ride> getRideHistoryForPassenger(Long passengerId) {
-        return rideRepository.findByPassengerIdOrderByStartTimeDesc(passengerId);
-    }
-
-    public List<Ride> findNearestRidesByLocation(Double latitude, Double longitude) {
-        return rideRepository.findNearestRidesByStartLatitudeAndStartLongitude(latitude, longitude);
-    }
+    RideDTO completeRide(Integer rideId);
 }
