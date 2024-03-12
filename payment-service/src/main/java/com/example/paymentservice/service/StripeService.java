@@ -29,8 +29,8 @@ public class StripeService {
         params.put("amount", chargeRequest.getAmount());
         params.put("currency", chargeRequest.getCurrency().toString());
         String description = chargeRequest.getDescription();
-        if (description.length() > 500) {
-            description = description.substring(0, 500);
+        if (description.length() > 499) {
+            description = description.substring(0, 499);
         }
         params.put("description", description);
 
