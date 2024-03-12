@@ -2,7 +2,6 @@ package com.example.paymentservice.controller;
 
 import com.example.paymentservice.entity.ChargeRequest;
 import com.example.paymentservice.entity.Payment;
-import com.example.paymentservice.repo.PaymentRepository;
 import com.example.paymentservice.service.StripeService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -17,22 +16,25 @@ public class ChargeController {
     @Autowired
     private StripeService stripeService;
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
     @PostMapping("/charge")
     public String charge(@RequestBody ChargeRequest chargeRequest) throws StripeException {
         Charge charge = stripeService.charge(chargeRequest);
 
         Payment payment = new Payment();
-        payment.setAmount(Math.toIntExact(charge.getAmount()));
+        payment.setAmount(charge.getAmount().intValue());
         payment.setCurrency(charge.getCurrency());
         payment.setDescription(charge.getDescription());
         payment.setStatus(charge.getStatus());
 
-        paymentRepository.save(payment);
+        stripeService.savePayment(payment);
 
         return payment.getId().toString();
     }
+
+    @GetMapping("/payments")
+    public List<Payment> getAllPayments() {
+        return stripeService.getAllPayments();
+    }
+
 
 }

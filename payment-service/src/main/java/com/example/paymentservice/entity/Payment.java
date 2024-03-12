@@ -16,7 +16,7 @@ public class Payment {
     private Long id;
 
     private String description;
-    private int amount;
+    private Integer amount;
     private String currency;
     private String status;
 

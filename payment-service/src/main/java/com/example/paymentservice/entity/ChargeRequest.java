@@ -5,13 +5,13 @@ import lombok.Data;
 @Data
 public class ChargeRequest {
     private String description;
-    private int amount;
+    private Integer amount;
     private String currency;
     private String stripeEmail;
     private String stripeToken;
     private String customerName;
     private String cardNumber;
-    private int expMonth;
-    private int expYear;
-    private int cvc;
+    private Integer expMonth;
+    private Integer expYear;
+    private Integer cvc;
 }
