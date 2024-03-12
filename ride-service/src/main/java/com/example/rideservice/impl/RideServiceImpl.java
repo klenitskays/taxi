@@ -46,15 +46,19 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public RideDTO getRideByPassengerId(Integer passengerId) {
-        Optional<Ride> rideOptional = rideRepository.findByPassengerId(passengerId);
-        return rideOptional.map(rideMapper::toRideDTO).orElse(null);
+    public List<RideDTO> getRideByPassengerId(Integer passengerId) {
+        List<Ride> rides = rideRepository.findByPassengerId(passengerId);
+        return rides.stream()
+                .map(rideMapper::toRideDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public RideDTO getRideByDriverId(Integer driverId) {
-        Optional<Ride> rideOptional = rideRepository.findByDriverId(driverId);
-        return rideOptional.map(rideMapper::toRideDTO).orElse(null);
+    public List<RideDTO> getRideByDriverId(Integer driverId) {
+        List<Ride> rides = rideRepository.findByDriverId(driverId);
+        return rides.stream()
+                .map(rideMapper::toRideDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

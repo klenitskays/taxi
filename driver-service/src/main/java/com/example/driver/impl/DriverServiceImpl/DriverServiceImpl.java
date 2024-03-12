@@ -47,7 +47,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<DriverDTO> readByLastName(String lastName) {
-        Optional<Driver> drivers = driverRepository.findByLastName(lastName);
+        List<Driver> drivers = driverRepository.findByLastName(lastName);
         return drivers.stream()
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());
@@ -55,8 +55,8 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<DriverDTO> findAvailableDrivers() {
-        Optional<Driver> isAvailableDrivers = driverRepository.findByAvailableIsTrue();
-        return isAvailableDrivers.stream()
+        List<Driver> availableDrivers = driverRepository.findByAvailableIsTrue();
+        return availableDrivers.stream()
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());
     }

@@ -38,8 +38,8 @@ public class RideController {
     }
 
     @GetMapping("/passenger/{passengerId}")
-    public ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId) {
-        RideDTO rideDTO = rideService.getRideByPassengerId(passengerId);
+    public ResponseEntity<List<RideDTO>> getRideByPassengerId(@PathVariable Integer passengerId) {
+        List<RideDTO> rideDTO = rideService.getRideByPassengerId(passengerId);
         if (rideDTO != null) {
             return ResponseEntity.ok(rideDTO);
         } else {
@@ -48,8 +48,8 @@ public class RideController {
     }
 
     @GetMapping("/driver/{driverId}")
-    public ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId) {
-        RideDTO rideDTO = rideService.getRideByDriverId(driverId);
+    public ResponseEntity<List<RideDTO>> getRideByDriverId(@PathVariable Integer driverId) {
+        List<RideDTO> rideDTO = rideService.getRideByDriverId(driverId);
         if (rideDTO != null) {
             return ResponseEntity.ok(rideDTO);
         } else {
@@ -66,7 +66,7 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/{rideId}/update-status")
+  /*  @PostMapping("/{rideId}/update-status")
     public ResponseEntity<RideDTO> updateRideStatus(@PathVariable Integer rideId, @RequestBody RideStatus status) {
         RideDTO updatedRide = rideService.updateRideStatus(rideId, status);
         if (updatedRide != null) {
@@ -74,7 +74,7 @@ public class RideController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 
     @PostMapping("/{rideId}/cancel")
     public ResponseEntity<RideDTO> cancelRide(@PathVariable Integer rideId) {

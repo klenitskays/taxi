@@ -13,9 +13,9 @@ public interface RideService {
 
     RideDTO getRideById(Integer id);
 
-    RideDTO getRideByPassengerId(Integer passengerId);
+    List<RideDTO> getRideByPassengerId(Integer passengerId);
 
-    RideDTO getRideByDriverId(Integer driverId);
+    List<RideDTO> getRideByDriverId(Integer driverId);
 
     RideDTO updateRide(@Valid RideDTO dto, Integer id);
 

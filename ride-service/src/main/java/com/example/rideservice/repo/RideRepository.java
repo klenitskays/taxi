@@ -4,12 +4,12 @@ import com.example.rideservice.entity.Ride;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface RideRepository extends JpaRepository<Ride, Integer> {
 
-    Optional<Ride> findByPassengerId(Integer passengerId);
+    List<Ride> findByPassengerId(Integer passengerId);
 
-    Optional<Ride> findByDriverId(Integer driverId);
+    List<Ride> findByDriverId(Integer driverId);
 }

@@ -50,9 +50,9 @@ public class DriverController {
     }
 
     @GetMapping("/findAvailableDrivers")
-    public ResponseEntity<List<DriverDTO>> getAvailableDrivers() {
+    public List<DriverDTO> getAvailableDrivers() {
         List<DriverDTO> driverDTOs = driverService.findAvailableDrivers();
-        return ResponseEntity.ok(driverDTOs);
+        return driverDTOs;
     }
 
     @PutMapping("/{id}")
