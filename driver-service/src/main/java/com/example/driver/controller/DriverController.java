@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -30,7 +29,7 @@ public class DriverController {
         return ResponseEntity.ok(drivers);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<DriverDTO> readById(@PathVariable Long id) {
         DriverDTO driverDTO = driverService.readById(id);
         if (driverDTO != null) {
@@ -56,7 +55,7 @@ public class DriverController {
         return ResponseEntity.ok(driverDTOs);
     }
 
-    @PutMapping("/id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<DriverDTO> update(
             @RequestBody DriverDTO dto,
             @PathVariable Long id
@@ -69,7 +68,7 @@ public class DriverController {
         }
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         driverService.delete(id);
         return ResponseEntity.noContent().build();

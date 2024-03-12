@@ -31,7 +31,7 @@ public class PassengerController {
         return ResponseEntity.ok(passengers);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<PassengerDTO> readById(@PathVariable Long id) {
         PassengerDTO passengerDTO = passengerService.readById(id);
         if (passengerDTO != null) {
@@ -51,7 +51,7 @@ public class PassengerController {
         }
     }
 
-    @PutMapping("/id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<PassengerDTO> update(
             @RequestBody PassengerDTO dto,
             @PathVariable Long id
@@ -64,7 +64,7 @@ public class PassengerController {
         }
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         passengerService.delete(id);
         return ResponseEntity.noContent().build();

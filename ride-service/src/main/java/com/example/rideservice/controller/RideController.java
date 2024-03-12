@@ -27,7 +27,7 @@ public class RideController {
         List<RideDTO> rides = rideService.readAll();
         return ResponseEntity.ok(rides);
     }
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<RideDTO> getRideById(@PathVariable Integer id) {
         RideDTO rideDTO = rideService.getRideById(id);
         if (rideDTO != null) {
@@ -57,7 +57,7 @@ public class RideController {
         }
     }
 
-    @PutMapping("/id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<RideDTO> updateRide(@RequestBody RideDTO dto, @PathVariable Integer id) {
         RideDTO updatedRideDTO = rideService.updateRide(dto, id);
         if (updatedRideDTO != null) {
@@ -95,7 +95,7 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
     }
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRide(@PathVariable Integer id) {
         rideService.deleteRide(id);
         return ResponseEntity.noContent().build();
