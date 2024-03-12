@@ -26,3 +26,11 @@ services:
       - 'POSTGRES_USER=postgres'
     ports:
       - '5454:5432'
+  payment-postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=paymentdb'
+      - 'POSTGRES_PASSWORD=postgre'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5455:5432'
