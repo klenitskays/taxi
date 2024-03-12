@@ -7,9 +7,10 @@ import com.example.paymentservice.service.StripeService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
 public class ChargeController {
@@ -21,16 +22,17 @@ public class ChargeController {
 
     @PostMapping("/charge")
     public String charge(@RequestBody ChargeRequest chargeRequest) throws StripeException {
-        Charge charge = stripeService.chargeWithCardDetails(chargeRequest);
+        Charge charge = stripeService.charge(chargeRequest);
 
         Payment payment = new Payment();
-        payment.setAmount(chargeRequest.getAmount());
-        payment.setCurrency(chargeRequest.getCurrency().toString());
-        payment.setDescription(chargeRequest.getDescription());
+        payment.setAmount(Math.toIntExact(charge.getAmount()));
+        payment.setCurrency(charge.getCurrency());
+        payment.setDescription(charge.getDescription());
         payment.setStatus(charge.getStatus());
 
         paymentRepository.save(payment);
 
         return payment.getId().toString();
     }
+
 }

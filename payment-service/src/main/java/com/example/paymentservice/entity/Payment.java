@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.data.relational.core.mapping.Table;
+
 @Data
 @Entity
 @Table(name = "payment")
