@@ -3,6 +3,8 @@ package com.example.driver.controller;
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.service.DriverService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +26,9 @@ public class DriverController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DriverDTO>> readAll() {
-        List<DriverDTO> drivers = driverService.readAll();
-        return ResponseEntity.ok(drivers);
+    public ResponseEntity<Page<DriverDTO>> getAllDrivers(Pageable pageable) {
+        Page<DriverDTO> driverPage = driverService.getAllDrivers(pageable);
+        return ResponseEntity.ok(driverPage);
     }
 
     @GetMapping("/{id}")
@@ -39,8 +41,8 @@ public class DriverController {
         }
     }
 
-    @GetMapping("/lastName/{lastName}")
-    public ResponseEntity<List<DriverDTO>> readByLastName(@PathVariable String lastName) {
+    @GetMapping("/lastName")
+    public ResponseEntity<List<DriverDTO>> readByLastName(@RequestParam("lastName") String lastName) {
         List<DriverDTO> drivers = driverService.readByLastName(lastName);
         if (!drivers.isEmpty()) {
             return ResponseEntity.ok(drivers);

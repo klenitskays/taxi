@@ -6,6 +6,8 @@ import com.example.paymentservice.service.StripeService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +34,9 @@ public class ChargeController {
     }
 
     @GetMapping("/payments")
-    public List<Payment> getAllPayments() {
-        return stripeService.getAllPayments();
+    public List<Payment> getAllPayments(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return stripeService.getAllPayments(pageable);
     }
 
 

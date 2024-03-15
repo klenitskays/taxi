@@ -3,13 +3,15 @@ package com.example.rideservice.service;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.status.RideStatus;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface RideService {
 
     RideDTO createRide(@Valid RideDTO rideDTO);
-    List<RideDTO> readAll();
+    Page<RideDTO> getAllRides(Pageable pageable);
 
     RideDTO getRideById(Integer id);
 
@@ -21,9 +23,11 @@ public interface RideService {
 
     void deleteRide(Integer id);
 
-    RideDTO updateRideStatus(Integer rideId, RideStatus status);
-
     RideDTO cancelRide(Integer rideId);
 
     RideDTO completeRide(Integer rideId);
+
+    RideDTO acceptRide(Integer rideId);
+
+    RideDTO startRide(Integer rideId);
 }

@@ -8,6 +8,8 @@ import com.example.rideservice.service.RideService;
 import com.example.rideservice.status.RideStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,11 +35,9 @@ public class RideServiceImpl implements RideService {
         return rideMapper.toRideDTO(savedRide);
     }
     @Override
-    public List<RideDTO> readAll() {
-        List<Ride> rides = rideRepository.findAll();
-        return rides.stream()
-                .map(rideMapper::toRideDTO)
-                .collect(Collectors.toList());
+    public Page<RideDTO> getAllRides(Pageable pageable) {
+        Page<Ride> ridePage = rideRepository.findAll(pageable);
+        return ridePage.map(rideMapper::toRideDTO);
     }
     @Override
     public RideDTO getRideById(Integer id) {
@@ -80,11 +80,11 @@ public class RideServiceImpl implements RideService {
         rideRepository.deleteById(id);
     }
     @Override
-    public RideDTO updateRideStatus(Integer rideId, RideStatus status) {
+    public RideDTO acceptRide(Integer rideId) {
         Optional<Ride> rideOptional = rideRepository.findById(rideId);
         if (rideOptional.isPresent()) {
             Ride ride = rideOptional.get();
-            ride.setStatus(status);
+            ride.setStatus(RideStatus.ACCEPTED);
 
             Ride updatedRide = rideRepository.save(ride);
             return rideMapper.toRideDTO(updatedRide);
@@ -93,6 +93,19 @@ public class RideServiceImpl implements RideService {
         }
     }
 
+    @Override
+    public RideDTO startRide(Integer rideId) {
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (rideOptional.isPresent()) {
+            Ride ride = rideOptional.get();
+            ride.setStatus(RideStatus.IN_PROGRESS);
+
+            Ride updatedRide = rideRepository.save(ride);
+            return rideMapper.toRideDTO(updatedRide);
+        } else {
+            return null;
+        }
+    }
     @Override
     public RideDTO cancelRide(Integer rideId) {
         Optional<Ride> rideOptional = rideRepository.findById(rideId);

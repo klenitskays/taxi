@@ -6,6 +6,8 @@ import com.example.driver.mapper.DriverMapper;
 import com.example.driver.repo.DriverRepository;
 import com.example.driver.service.DriverService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -28,11 +30,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<DriverDTO> readAll() {
-        List<Driver> drivers = driverRepository.findAll();
-        return drivers.stream()
-                .map(driverMapper::toDriverDTO)
-                .collect(Collectors.toList());
+    public Page<DriverDTO> getAllDrivers(Pageable pageable) {
+        Page<Driver> driverPage = driverRepository.findAll(pageable);
+        return driverPage.map(driverMapper::toDriverDTO);
     }
 
     @Override

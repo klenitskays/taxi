@@ -8,6 +8,7 @@ import com.stripe.exception.*;
 import com.stripe.model.Charge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -39,8 +40,8 @@ public class StripeService {
         paymentRepository.save(payment);
     }
 
-    public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
+    public List<Payment> getAllPayments(Pageable pageable) {
+        return paymentRepository.findAll(pageable).getContent();
     }
 
 }

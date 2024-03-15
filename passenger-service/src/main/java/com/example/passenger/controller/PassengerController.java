@@ -3,6 +3,8 @@ package com.example.passenger.controller;
 import com.example.passenger.dto.PassengerDTO;
 import com.example.passenger.service.PassengerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +28,9 @@ public class PassengerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PassengerDTO>> readAll() {
-        List<PassengerDTO> passengers = passengerService.readAll();
-        return ResponseEntity.ok(passengers);
+    public ResponseEntity<Page<PassengerDTO>> getAllPassengers(Pageable pageable) {
+        Page<PassengerDTO> passengerPage = passengerService.getAllPassengers(pageable);
+        return ResponseEntity.ok(passengerPage);
     }
 
     @GetMapping("/{id}")
@@ -41,8 +43,8 @@ public class PassengerController {
         }
     }
 
-    @GetMapping("/lastName/{lastName}")
-    public ResponseEntity<List<PassengerDTO>> readByLastName(@PathVariable String lastName) {
+    @GetMapping("/lastName")
+    public ResponseEntity<List<PassengerDTO>> readByLastName(@RequestParam("lastName") String lastName) {
         List<PassengerDTO> passengers = passengerService.readByLastName(lastName);
         if (!passengers.isEmpty()) {
             return ResponseEntity.ok(passengers);

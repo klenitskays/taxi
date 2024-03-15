@@ -8,6 +8,8 @@ import com.example.passenger.repo.PassengerRepository;
 import com.example.passenger.service.PassengerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -29,11 +31,9 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     @Override
-    public List<PassengerDTO> readAll() {
-        List<Passenger> passengers = passengerRepository.findAll();
-        return passengers.stream()
-                .map(passengerMapper::toPassengerDTO)
-                .collect(Collectors.toList());
+    public Page<PassengerDTO> getAllPassengers(Pageable pageable) {
+        Page<Passenger> passengerPage = passengerRepository.findAll(pageable);
+        return passengerPage.map(passengerMapper::toPassengerDTO);
     }
 
     @Override
