@@ -1,7 +1,7 @@
 package com.example.rideservice.impl;
 
 import com.example.driver.dto.DriverDTO;
-import com.example.driver.service.DriverService;
+import com.example.driver.impl.DriverServiceImpl;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.entity.Ride;
 import com.example.rideservice.mapper.RideMapper;
@@ -25,7 +25,7 @@ public class RideServiceImpl implements RideService {
 
     private final RideRepository rideRepository;
     private final RideMapper rideMapper;
-    private final DriverService driverService;
+    private final DriverServiceImpl driverServiceImpl;
 
     @Override
     public RideDTO createRideWithDriver(Integer passengerId, Double startLatitude, Double startLongitude, Double destinationLatitude, Double destinationLongitude) {
@@ -36,7 +36,7 @@ public class RideServiceImpl implements RideService {
         rideDTO.setDestinationLatitude(destinationLatitude);
         rideDTO.setDestinationLongitude(destinationLongitude);
 
-        List<DriverDTO> availableDrivers = driverService.findAvailableDrivers();
+        List<DriverDTO> availableDrivers = driverServiceImpl.findAvailableDrivers();
 
         if (!availableDrivers.isEmpty()) {
             DriverDTO firstAvailableDriver = availableDrivers.get(0);

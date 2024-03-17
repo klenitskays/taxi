@@ -1,11 +1,7 @@
 package com.example.rideservice.controller;
 
-import com.example.driver.dto.DriverDTO;
-import com.example.driver.service.DriverService;
-import com.example.passenger.service.PassengerService;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.service.RideService;
-import com.example.rideservice.status.RideStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +17,6 @@ import java.util.List;
 public class RideController {
 
     private final RideService rideService;
-    private final PassengerService passengerService;
-    private final DriverService driverService;
 
     @PostMapping("/createWithDriver")
     public ResponseEntity<RideDTO> createRideWithDriver(
