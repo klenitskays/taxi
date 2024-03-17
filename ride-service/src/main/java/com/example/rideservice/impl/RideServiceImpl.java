@@ -1,5 +1,7 @@
 package com.example.rideservice.impl;
 
+import com.example.driver.dto.DriverDTO;
+import com.example.driver.service.DriverService;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.entity.Ride;
 import com.example.rideservice.mapper.RideMapper;
@@ -23,17 +25,33 @@ public class RideServiceImpl implements RideService {
 
     private final RideRepository rideRepository;
     private final RideMapper rideMapper;
+    private final DriverService driverService;
 
     @Override
-    public RideDTO createRide(@Valid RideDTO dto) {
-        Ride ride = rideMapper.toRide(dto);
-        ride.setStatus(RideStatus.CREATED);
-        ride.setStartTime(LocalDateTime.now());
+    public RideDTO createRideWithDriver(Integer passengerId, Double startLatitude, Double startLongitude, Double destinationLatitude, Double destinationLongitude) {
+        RideDTO rideDTO = new RideDTO();
+        rideDTO.setPassengerId(passengerId);
+        rideDTO.setStartLatitude(startLatitude);
+        rideDTO.setStartLongitude(startLongitude);
+        rideDTO.setDestinationLatitude(destinationLatitude);
+        rideDTO.setDestinationLongitude(destinationLongitude);
 
-        Ride savedRide = rideRepository.save(ride);
+        List<DriverDTO> availableDrivers = driverService.findAvailableDrivers();
 
-        return rideMapper.toRideDTO(savedRide);
+        if (!availableDrivers.isEmpty()) {
+            DriverDTO firstAvailableDriver = availableDrivers.get(0);
+            rideDTO.setDriverId(firstAvailableDriver.getId());
+        } else {
+            // Handle case when no available drivers
+        }
+
+        // Now create the ride with the selected driver
+        RideDTO createdRide = rideMapper.toRideDTO(rideRepository.save(rideMapper.toRide(rideDTO)));
+
+        return createdRide;
     }
+
+
     @Override
     public Page<RideDTO> getAllRides(Pageable pageable) {
         Page<Ride> ridePage = rideRepository.findAll(pageable);
