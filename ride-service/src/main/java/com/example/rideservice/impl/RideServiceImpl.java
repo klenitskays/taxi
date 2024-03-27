@@ -42,10 +42,8 @@ public class RideServiceImpl implements RideService {
             DriverDTO firstAvailableDriver = availableDrivers.get(0);
             rideDTO.setDriverId(firstAvailableDriver.getId());
         } else {
-            // Handle case when no available drivers
         }
 
-        // Now create the ride with the selected driver
         RideDTO createdRide = rideMapper.toRideDTO(rideRepository.save(rideMapper.toRide(rideDTO)));
 
         return createdRide;
