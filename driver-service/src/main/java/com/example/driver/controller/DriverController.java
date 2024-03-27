@@ -1,6 +1,7 @@
 package com.example.driver.controller;
 
 import com.example.driver.dto.DriverDTO;
+import com.example.driver.dto.DriverListDTO;
 import com.example.driver.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,16 +43,14 @@ public class DriverController {
     }
 
     @GetMapping("/lastName")
-    public ResponseEntity<List<DriverDTO>> readByLastName(@RequestParam("lastName") String lastName) {
+    public ResponseEntity<DriverListDTO> readByLastName(@RequestParam("lastName") String lastName) {
         List<DriverDTO> drivers = driverService.readByLastName(lastName);
-        if (!drivers.isEmpty()) {
-            return ResponseEntity.ok(drivers);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        DriverListDTO driverListDTO = new DriverListDTO(drivers);
+
+        return ResponseEntity.ok(driverListDTO);
     }
 
-    @GetMapping("/findAvailableDrivers")
+    @GetMapping("/available")
     public List<DriverDTO> getAvailableDrivers() {
         List<DriverDTO> driverDTOs = driverService.findAvailableDrivers();
         return driverDTOs;
