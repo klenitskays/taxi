@@ -1,13 +1,19 @@
 package com.example.rideservice.controller;
 
+import com.example.driver.dto.DriverDTO;
+import com.example.passenger.dto.PassengerDTO;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.service.RideService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -17,11 +23,32 @@ import java.util.List;
 public class RideController {
 
     private final RideService rideService;
+    public final RestTemplate restTemplate;
 
     @PostMapping
     public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
-        RideDTO createdRideDTO = rideService.createRide(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
+        String passengerUrl = "http://localhost:8080/passenger";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        ResponseEntity<Page<PassengerDTO>> response = restTemplate.exchange(
+                passengerUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Page<PassengerDTO>>() {}
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Page<PassengerDTO> passengerPage = response.getBody();
+            List<PassengerDTO> passengers = passengerPage.getContent();
+            if (!passengers.isEmpty()) {
+                PassengerDTO passengerDTO = passengers.get(0);
+                dto.setPassengerId(passengerDTO.getId());
+                RideDTO createdRideDTO = rideService.createRide(dto);
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
+            }
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping
@@ -91,12 +118,29 @@ public class RideController {
 
     @PostMapping("/{rideId}/accept")
     public ResponseEntity<RideDTO> acceptRide(@PathVariable Integer rideId) {
-        RideDTO acceptedRide = rideService.acceptRide(rideId);
-        if (acceptedRide != null) {
-            return ResponseEntity.ok(acceptedRide);
-        } else {
-            return ResponseEntity.notFound().build();
+        String driverUrl = "http://localhost:8081/driver/available"; // URL эндпоинта для получения списка доступных водителей
+
+        ResponseEntity<List<DriverDTO>> response = restTemplate.exchange(
+                driverUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<DriverDTO>>() {}
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            List<DriverDTO> availableDrivers = response.getBody();
+
+            if (!availableDrivers.isEmpty()) {
+                DriverDTO selectedDriver = availableDrivers.get(0); // Выбираем первого водителя из списка
+                RideDTO acceptedRide = rideService.acceptRide(rideId, selectedDriver.getId()); // Принимаем поездку с выбранным водителем
+
+                if (acceptedRide != null) {
+                    return ResponseEntity.ok(acceptedRide);
+                }
+            }
         }
+
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/{rideId}/start")

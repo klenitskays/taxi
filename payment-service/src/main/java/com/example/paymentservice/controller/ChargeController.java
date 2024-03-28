@@ -19,7 +19,7 @@ public class ChargeController {
     private StripeService stripeService;
 
     @PostMapping("/charge")
-    public String charge(@RequestBody ChargeRequest chargeRequest) throws StripeException {
+    public ChargeRequest charge(@RequestBody ChargeRequest chargeRequest) throws StripeException {
         Charge charge = stripeService.charge(chargeRequest);
 
         Payment payment = new Payment();
@@ -30,7 +30,7 @@ public class ChargeController {
 
         stripeService.savePayment(payment);
 
-        return payment.getId().toString();
+        return chargeRequest;
     }
 
     @GetMapping("/payments")

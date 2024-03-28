@@ -17,4 +17,5 @@ public class RideDTO {
     private RideStatus status;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Integer price;
 }

@@ -42,4 +42,7 @@ public class Ride {
 
     @Column(name = "end_time")
     private LocalDateTime endTime;
+
+    @Column(name = "price")
+    private Integer price;
     }
