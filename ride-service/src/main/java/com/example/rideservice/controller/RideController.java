@@ -18,21 +18,10 @@ public class RideController {
 
     private final RideService rideService;
 
-    @PostMapping("/createWithDriver")
-    public ResponseEntity<RideDTO> createRideWithDriver(
-            @RequestParam("passengerId") Integer passengerId,
-            @RequestParam("startLatitude") Double startLatitude,
-            @RequestParam("startLongitude") Double startLongitude,
-            @RequestParam("destinationLatitude") Double destinationLatitude,
-            @RequestParam("destinationLongitude") Double destinationLongitude
-    ) {
-        RideDTO createdRide = rideService.createRideWithDriver(passengerId, startLatitude, startLongitude, destinationLatitude, destinationLongitude);
-
-        if (createdRide != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdRide);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+    @PostMapping
+    public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
+        RideDTO createdRideDTO = rideService.createRide(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
     }
 
     @GetMapping

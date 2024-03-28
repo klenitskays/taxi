@@ -1,7 +1,5 @@
 package com.example.rideservice.impl;
 
-import com.example.driver.dto.DriverDTO;
-import com.example.driver.impl.DriverServiceImpl;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.entity.Ride;
 import com.example.rideservice.mapper.RideMapper;
@@ -25,31 +23,16 @@ public class RideServiceImpl implements RideService {
 
     private final RideRepository rideRepository;
     private final RideMapper rideMapper;
-    private final DriverServiceImpl driverServiceImpl;
-
     @Override
-    public RideDTO createRideWithDriver(Integer passengerId, Double startLatitude, Double startLongitude, Double destinationLatitude, Double destinationLongitude) {
-        RideDTO rideDTO = new RideDTO();
-        rideDTO.setPassengerId(passengerId);
-        rideDTO.setStartLatitude(startLatitude);
-        rideDTO.setStartLongitude(startLongitude);
-        rideDTO.setDestinationLatitude(destinationLatitude);
-        rideDTO.setDestinationLongitude(destinationLongitude);
+    public RideDTO createRide(@Valid RideDTO dto) {
+        Ride ride = rideMapper.toRide(dto);
+        ride.setStatus(RideStatus.CREATED);
+        ride.setStartTime(LocalDateTime.now());
 
-        List<DriverDTO> availableDrivers = driverServiceImpl.findAvailableDrivers();
+        Ride savedRide = rideRepository.save(ride);
 
-        if (!availableDrivers.isEmpty()) {
-            DriverDTO firstAvailableDriver = availableDrivers.get(0);
-            rideDTO.setDriverId(firstAvailableDriver.getId());
-        } else {
-        }
-
-        RideDTO createdRide = rideMapper.toRideDTO(rideRepository.save(rideMapper.toRide(rideDTO)));
-
-        return createdRide;
+        return rideMapper.toRideDTO(savedRide);
     }
-
-
     @Override
     public Page<RideDTO> getAllRides(Pageable pageable) {
         Page<Ride> ridePage = rideRepository.findAll(pageable);

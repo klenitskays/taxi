@@ -28,6 +28,7 @@
 		<spring-boot-starter-web-services.version>2.6.2</spring-boot-starter-web-services.version>
 		<lombok.version>1.18.30</lombok.version>
 		<spring-boot-starter-test.version>2.6.2</spring-boot-starter-test.version>
+		<spring.cloud.stream.test.binder.version>4.0.1</spring.cloud.stream.test.binder.version>
 	</properties>
 
 	<dependencies>
@@ -71,6 +72,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
