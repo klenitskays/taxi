@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -46,7 +45,6 @@ public class DriverController {
     public ResponseEntity<DriverListDTO> readByLastName(@RequestParam("lastName") String lastName) {
         List<DriverDTO> drivers = driverService.readByLastName(lastName);
         DriverListDTO driverListDTO = new DriverListDTO(drivers);
-
         return ResponseEntity.ok(driverListDTO);
     }
 

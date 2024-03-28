@@ -9,7 +9,7 @@
     <changeSet id="6" author="Sonya">
         <tagDatabase tag="db-init" />
     </changeSet>
-    <include file="v-1.0/db.changelog-v.1.0.xml" relativeToChangelogFile="true" />
+    <include file="v-1.0/db.changelog-ride-v.1.0.xml" relativeToChangelogFile="true" />
     <changeSet id="7" author="Sonya">
         <tagDatabase tag="v.1.0" />
     </changeSet>

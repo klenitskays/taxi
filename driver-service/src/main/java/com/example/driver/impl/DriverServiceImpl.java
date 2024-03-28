@@ -1,4 +1,4 @@
-package com.example.driver.impl.DriverServiceImpl;
+package com.example.driver.impl;
 
 import com.example.driver.dto.DriverDTO;
 import com.example.driver.entity.Driver;
@@ -60,7 +60,6 @@ public class DriverServiceImpl implements DriverService {
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());
     }
-
 
 
 
