@@ -1,9 +1,12 @@
 package com.example.rideservice.controller;
 
 import com.example.driver.dto.DriverDTO;
+import com.example.passenger.client.PassengerClient;
 import com.example.passenger.dto.PassengerDTO;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.service.RideService;
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ride")
@@ -23,29 +27,22 @@ import java.util.List;
 public class RideController {
 
     private final RideService rideService;
-    public final RestTemplate restTemplate;
 
     @PostMapping
     public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
-        String passengerUrl = "http://localhost:8080/passenger";
+        PassengerClient passengerClient = Feign.builder()
+                .decoder(new JacksonDecoder())
+                .target(PassengerClient.class, "http://localhost:8080");
+
         Pageable pageable = PageRequest.of(0, 10);
+        Page<PassengerDTO> passengerPage = passengerClient.getPassengers((Map<String, Object>) pageable);
 
-        ResponseEntity<Page<PassengerDTO>> response = restTemplate.exchange(
-                passengerUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<Page<PassengerDTO>>() {}
-        );
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            Page<PassengerDTO> passengerPage = response.getBody();
-            List<PassengerDTO> passengers = passengerPage.getContent();
-            if (!passengers.isEmpty()) {
-                PassengerDTO passengerDTO = passengers.get(0);
-                dto.setPassengerId(passengerDTO.getId());
-                RideDTO createdRideDTO = rideService.createRide(dto);
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
-            }
+        List<PassengerDTO> passengers = passengerPage.getContent();
+        if (!passengers.isEmpty()) {
+            PassengerDTO passengerDTO = passengers.get(0);
+            dto.setPassengerId(passengerDTO.getId());
+            RideDTO createdRideDTO = rideService.createRide(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
         }
 
         return ResponseEntity.notFound().build();
@@ -116,7 +113,7 @@ public class RideController {
         }
     }
 
-    @PostMapping("/{rideId}/accept")
+  /*  @PostMapping("/{rideId}/accept")
     public ResponseEntity<RideDTO> acceptRide(@PathVariable Integer rideId) {
         String driverUrl = "http://localhost:8081/driver/available"; // URL эндпоинта для получения списка доступных водителей
 
@@ -141,7 +138,7 @@ public class RideController {
         }
 
         return ResponseEntity.notFound().build();
-    }
+    }*/
 
     @PostMapping("/{rideId}/start")
     public ResponseEntity<RideDTO> startRide(@PathVariable Integer rideId) {
