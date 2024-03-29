@@ -8,6 +8,7 @@ import com.example.rideservice.service.RideService;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.openfeign.support.SpringMvcContract;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,11 +32,12 @@ public class RideController {
     @PostMapping
     public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
         PassengerClient passengerClient = Feign.builder()
+                .contract(new SpringMvcContract())
                 .decoder(new JacksonDecoder())
-                .target(PassengerClient.class, "http://localhost:8080");
+                .target(PassengerClient.class, "http://localhost:8080/passenger");
 
         Pageable pageable = PageRequest.of(0, 10);
-        Page<PassengerDTO> passengerPage = passengerClient.getPassengers((Map<String, Object>) pageable);
+        Page<PassengerDTO> passengerPage = passengerClient.getPassengers(pageable);
 
         List<PassengerDTO> passengers = passengerPage.getContent();
         if (!passengers.isEmpty()) {
@@ -47,6 +49,11 @@ public class RideController {
 
         return ResponseEntity.notFound().build();
     }
+   /* @PostMapping
+    public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
+        RideDTO createdRideDTO = rideService.createRide(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
+    }*/
 
     @GetMapping
     public ResponseEntity<Page<RideDTO>> getAllRides(Pageable pageable) {
