@@ -4,6 +4,7 @@ import com.example.passenger.dto.PassengerDTO;
 import com.example.passenger.service.PassengerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,9 @@ public class PassengerController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PassengerDTO>> getAllPassengers(Pageable pageable) {
-        Page<PassengerDTO> passengerPage = passengerService.getAllPassengers(pageable);
-        return ResponseEntity.ok(passengerPage);
+    public List<PassengerDTO> getAllPassengers(@RequestParam int pageNumber, @RequestParam int pageSize) {
+        Page<PassengerDTO> passengerPage = passengerService.getAllPassengers(PageRequest.of(pageNumber,pageSize));
+        return passengerPage.getContent();
     }
 
     @GetMapping("/{id}")
