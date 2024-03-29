@@ -34,12 +34,9 @@ public class RideController {
         PassengerClient passengerClient = Feign.builder()
                 .contract(new SpringMvcContract())
                 .decoder(new JacksonDecoder())
-                .target(PassengerClient.class, "http://localhost:8080/passenger");
+                .target(PassengerClient.class, "http://localhost:8080");
 
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<PassengerDTO> passengerPage = passengerClient.getPassengers(pageable);
-
-        List<PassengerDTO> passengers = passengerPage.getContent();
+        List<PassengerDTO> passengers = passengerClient.getPassengers(0,10);
         if (!passengers.isEmpty()) {
             PassengerDTO passengerDTO = passengers.get(0);
             dto.setPassengerId(passengerDTO.getId());
