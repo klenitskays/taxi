@@ -1,5 +1,6 @@
 package com.example.rideservice.controller;
 
+import com.example.driver.client.DriverClient;
 import com.example.driver.dto.DriverDTO;
 import com.example.passenger.client.PassengerClient;
 import com.example.passenger.dto.PassengerDTO;
@@ -46,12 +47,6 @@ public class RideController {
 
         return ResponseEntity.notFound().build();
     }
-   /* @PostMapping
-    public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
-        RideDTO createdRideDTO = rideService.createRide(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
-    }*/
-
     @GetMapping
     public ResponseEntity<Page<RideDTO>> getAllRides(Pageable pageable) {
         Page<RideDTO> ridePage = rideService.getAllRides(pageable);
@@ -116,33 +111,28 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PutMapping("/{rideId}/accept")
+    public ResponseEntity<RideDTO> acceptRide(@PathVariable("rideId") Long rideId) {
+        DriverClient driverClient = Feign.builder()
+                .contract(new SpringMvcContract())
+                .decoder(new JacksonDecoder())
+                .target(DriverClient.class, "http://localhost:8081");
 
-  /*  @PostMapping("/{rideId}/accept")
-    public ResponseEntity<RideDTO> acceptRide(@PathVariable Integer rideId) {
-        String driverUrl = "http://localhost:8081/driver/available"; // URL эндпоинта для получения списка доступных водителей
-
-        ResponseEntity<List<DriverDTO>> response = restTemplate.exchange(
-                driverUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<DriverDTO>>() {}
-        );
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            List<DriverDTO> availableDrivers = response.getBody();
-
+        RideDTO rideDTO = rideService.acceptRide(Math.toIntExact(rideId));
+        if (rideDTO != null && rideDTO.getDriverId() != null && rideDTO.getDriverId() == 0) {
+            List<DriverDTO> availableDrivers = driverClient.getAvailableDrivers();
             if (!availableDrivers.isEmpty()) {
-                DriverDTO selectedDriver = availableDrivers.get(0); // Выбираем первого водителя из списка
-                RideDTO acceptedRide = rideService.acceptRide(rideId, selectedDriver.getId()); // Принимаем поездку с выбранным водителем
+                DriverDTO driverDTO = availableDrivers.get(0);
+                driverDTO.setAvailable(false);
+                rideDTO.setDriverId(driverDTO.getId());
 
-                if (acceptedRide != null) {
-                    return ResponseEntity.ok(acceptedRide);
-                }
+                RideDTO updatedRideDTO = rideService.updateRide(rideDTO, Math.toIntExact(rideId));
+                return ResponseEntity.ok(updatedRideDTO);
             }
         }
 
         return ResponseEntity.notFound().build();
-    }*/
+    }
 
     @PostMapping("/{rideId}/start")
     public ResponseEntity<RideDTO> startRide(@PathVariable Integer rideId) {
