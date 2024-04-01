@@ -89,7 +89,7 @@ public class DriverServiceImpl implements DriverService {
         Optional<Driver> optionalDriver = driverRepository.findById(id);
         if (optionalDriver.isPresent()) {
             Driver driver = optionalDriver.get();
-            driver.setAvailable(!driver.getAvailable()); // Инвертируем значение поля available
+            driver.setAvailable(!driver.getAvailable());
             Driver savedDriver = driverRepository.save(driver);
             return driverMapper.toDriverDTO(savedDriver);
         }

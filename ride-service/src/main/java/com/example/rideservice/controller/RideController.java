@@ -37,11 +37,13 @@ public class RideController {
                 .decoder(new JacksonDecoder())
                 .target(PassengerClient.class, "http://localhost:8080");
 
-        List<PassengerDTO> passengers = passengerClient.getPassengers(0,10);
+        List<PassengerDTO> passengers = passengerClient.getAvailablePassenger();
         if (!passengers.isEmpty()) {
             PassengerDTO passengerDTO = passengers.get(0);
             dto.setPassengerId(passengerDTO.getId());
             RideDTO createdRideDTO = rideService.createRide(dto);
+            passengerClient.togglePassengerAvailability((long) passengerDTO.getId());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
         }
 
@@ -123,7 +125,7 @@ public class RideController {
             List<DriverDTO> availableDrivers = driverClient.getAvailableDrivers();
             if (!availableDrivers.isEmpty()) {
                 DriverDTO driverDTO = availableDrivers.get(0);
-                driverClient.toggleDriverAvailability((long) driverDTO.getId()); // Вызываем метод toggleDriverAvailability
+                driverClient.toggleDriverAvailability((long) driverDTO.getId());
 
                 rideDTO.setDriverId(driverDTO.getId());
                 RideDTO updatedRideDTO = rideService.updateRide(rideDTO, Math.toIntExact(rideId));

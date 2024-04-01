@@ -69,4 +69,18 @@ public class PassengerController {
         passengerService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/available")
+    public List<PassengerDTO> getAvailablePassengers() {
+        List<PassengerDTO> passengerDTOs = passengerService.findAvailablePassenger();
+        return passengerDTOs;
+    }
+    @PutMapping("/{id}/toggle-availability")
+    public ResponseEntity<PassengerDTO> toggleDriverAvailability(@PathVariable("id") Long id) {
+        PassengerDTO updatedPassengerDTO = passengerService.toggleAvailability(id);
+        if (updatedPassengerDTO != null) {
+            return ResponseEntity.ok(updatedPassengerDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

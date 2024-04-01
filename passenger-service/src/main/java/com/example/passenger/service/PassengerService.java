@@ -19,4 +19,7 @@ public interface PassengerService {
     void delete(Long id);
     @NotNull
     PassengerDTO getDriver(@Valid PassengerDTO dto, Passenger passenger);
+    List<PassengerDTO> findAvailablePassenger();
+    PassengerDTO toggleAvailability(Long id);
+
 }

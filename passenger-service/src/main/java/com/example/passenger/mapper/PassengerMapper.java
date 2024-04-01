@@ -25,6 +25,7 @@ public interface PassengerMapper {
         passenger.setStartLongitude(dto.getStartLongitude());
         passenger.setDestinationLatitude(dto.getDestinationLatitude());
         passenger.setDestinationLongitude(dto.getDestinationLongitude());
+        passenger.setAvailable(dto.isAvailable());
         passenger.setRating(dto.getRating());
     }
 }

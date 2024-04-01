@@ -77,4 +77,22 @@ public class PassengerServiceImpl implements PassengerService {
        passengerMapper.updatePassengerFromDTO(dto,passenger);
         return passengerMapper.toPassengerDTO(passenger);
     }
+    @Override
+    public List<PassengerDTO> findAvailablePassenger() {
+        List<Passenger> availablePassengers = passengerRepository.findByAvailableIsTrue();
+        return availablePassengers.stream()
+                .map(passengerMapper::toPassengerDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public PassengerDTO toggleAvailability(Long id) {
+        Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
+        if (optionalPassenger.isPresent()) {
+            Passenger passenger = optionalPassenger.get();
+            passenger.setAvailable(!passenger.getAvailable());
+            Passenger savedPassenger = passengerRepository.save(passenger);
+            return passengerMapper.toPassengerDTO(savedPassenger);
+        }
+        return null;
+    }
 }

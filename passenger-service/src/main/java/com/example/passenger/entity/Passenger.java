@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 
 
 @Entity
@@ -53,6 +54,10 @@ public class Passenger {
     @Max(value = 180, message = "Destination longitude must be less than or equal to 180")
     @Column(name = "destination_longitude")
     private Double destinationLongitude;
+
+    @NotNull(message = "Availability status is required")
+    @Column(name = "available")
+    private Boolean available;
 
     @Min(value = 0, message = "Rating must be a non-negative value")
     @Max(value = 5, message = "Rating cannot exceed 5")

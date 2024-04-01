@@ -12,5 +12,7 @@ public class PassengerDTO {
     private double startLongitude;
     private double destinationLatitude;
     private double destinationLongitude;
+    private boolean available;
     private int rating;
+
 }

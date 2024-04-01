@@ -13,5 +13,6 @@ public interface PassengerRepository extends JpaRepository<Passenger, Long> {
     List<Passenger> findByLastName(String lastName);
 
     Page<Passenger> findAll(Pageable pageable);
+    List<Passenger> findByAvailableIsTrue();
 
 }
