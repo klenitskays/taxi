@@ -123,9 +123,9 @@ public class RideController {
             List<DriverDTO> availableDrivers = driverClient.getAvailableDrivers();
             if (!availableDrivers.isEmpty()) {
                 DriverDTO driverDTO = availableDrivers.get(0);
-                driverDTO.setAvailable(false);
-                rideDTO.setDriverId(driverDTO.getId());
+                driverClient.toggleDriverAvailability((long) driverDTO.getId()); // Вызываем метод toggleDriverAvailability
 
+                rideDTO.setDriverId(driverDTO.getId());
                 RideDTO updatedRideDTO = rideService.updateRide(rideDTO, Math.toIntExact(rideId));
                 return ResponseEntity.ok(updatedRideDTO);
             }

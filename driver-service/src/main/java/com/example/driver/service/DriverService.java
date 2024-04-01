@@ -19,4 +19,5 @@ public interface DriverService {
     void delete(Long id);
     @NotNull
     DriverDTO getDriver(@Valid DriverDTO dto, Driver driver);
+    DriverDTO toggleAvailability(Long id);
 }

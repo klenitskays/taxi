@@ -84,4 +84,15 @@ public class DriverServiceImpl implements DriverService {
         driverMapper.updateDriverFromDTO(dto, driver);
         return driverMapper.toDriverDTO(driver);
     }
+    @Override
+    public DriverDTO toggleAvailability(Long id) {
+        Optional<Driver> optionalDriver = driverRepository.findById(id);
+        if (optionalDriver.isPresent()) {
+            Driver driver = optionalDriver.get();
+            driver.setAvailable(!driver.getAvailable()); // Инвертируем значение поля available
+            Driver savedDriver = driverRepository.save(driver);
+            return driverMapper.toDriverDTO(savedDriver);
+        }
+        return null;
+    }
 }

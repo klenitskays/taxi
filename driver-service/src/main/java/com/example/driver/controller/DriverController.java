@@ -72,4 +72,13 @@ public class DriverController {
         driverService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}/toggle-availability")
+    public ResponseEntity<DriverDTO> toggleDriverAvailability(@PathVariable("id") Long id) {
+        DriverDTO updatedDriverDTO = driverService.toggleAvailability(id);
+        if (updatedDriverDTO != null) {
+            return ResponseEntity.ok(updatedDriverDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
