@@ -29,9 +29,9 @@ public class StripeService {
 
         Map<String, Object> params = new HashMap<>();
         params.put("amount", chargeRequest.getAmount());
-        params.put("currency", chargeRequest.getCurrency());
-        params.put("description", chargeRequest.getDescription());
-        params.put("source", chargeRequest.getStripeToken());
+        params.put("currency", "usd");
+        params.put("description", "Default description");
+        params.put("source", "tok_visa");
 
         return Charge.create(params);
     }

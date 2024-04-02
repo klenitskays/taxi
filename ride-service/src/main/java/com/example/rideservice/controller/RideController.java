@@ -4,24 +4,24 @@ import com.example.driver.client.DriverClient;
 import com.example.driver.dto.DriverDTO;
 import com.example.passenger.client.PassengerClient;
 import com.example.passenger.dto.PassengerDTO;
+import com.example.paymentservice.client.ChargeClient;
+import com.example.paymentservice.entity.ChargeRequest;
+import com.example.paymentservice.entity.Payment;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.service.RideService;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringMvcContract;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/ride")
@@ -105,9 +105,18 @@ public class RideController {
     }
 
     @PostMapping("/{rideId}/complete")
-    public ResponseEntity<RideDTO> completeRide(@PathVariable Integer rideId) {
+    public ResponseEntity<RideDTO> completeRide(@PathVariable("rideId") Integer rideId) {
         RideDTO completedRide = rideService.completeRide(rideId);
         if (completedRide != null) {
+            int price = completedRide.getPrice();
+            ChargeRequest chargeRequest = new ChargeRequest();
+            chargeRequest.setAmount((int) price);
+            ChargeClient chargeClient = Feign.builder()
+                    .contract(new SpringMvcContract())
+                    .encoder(new JacksonEncoder())
+                    .decoder(new ResponseEntityDecoder(new JacksonDecoder()))
+                    .target(ChargeClient.class, "http://localhost:8084");
+            Payment payment  = chargeClient.charge(chargeRequest);
             return ResponseEntity.ok(completedRide);
         } else {
             return ResponseEntity.notFound().build();
