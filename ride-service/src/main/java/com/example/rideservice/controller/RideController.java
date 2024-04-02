@@ -116,7 +116,27 @@ public class RideController {
                     .encoder(new JacksonEncoder())
                     .decoder(new ResponseEntityDecoder(new JacksonDecoder()))
                     .target(ChargeClient.class, "http://localhost:8084");
-            Payment payment  = chargeClient.charge(chargeRequest);
+            Payment payment = chargeClient.charge(chargeRequest);
+
+            DriverClient driverClient = Feign.builder()
+                    .contract(new SpringMvcContract())
+                    .decoder(new JacksonDecoder())
+                    .target(DriverClient.class, "http://localhost:8081");
+
+            if (completedRide.getDriverId() != null) {
+                driverClient.toggleDriverAvailability(Long.valueOf(completedRide.getDriverId()));
+            }
+
+            RideDTO rideDTO = rideService.completeRide(rideId);
+            if (rideDTO != null && rideDTO.getPassengerId() != null) {
+                PassengerClient passengerClient = Feign.builder()
+                        .contract(new SpringMvcContract())
+                        .decoder(new JacksonDecoder())
+                        .target(PassengerClient.class, "http://localhost:8080");
+
+                passengerClient.togglePassengerAvailability(Long.valueOf(rideDTO.getPassengerId()));
+            }
+
             return ResponseEntity.ok(completedRide);
         } else {
             return ResponseEntity.notFound().build();
