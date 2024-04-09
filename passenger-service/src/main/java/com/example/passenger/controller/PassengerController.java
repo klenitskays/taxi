@@ -4,6 +4,7 @@ import com.example.passenger.dto.PassengerDTO;
 import com.example.passenger.service.PassengerService;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +27,18 @@ public class PassengerController {
     private final PassengerService passengerService;
     private final KafkaProducer<String, String> producer;
     private final String topicName;
+    @Autowired
+    public PassengerController(PassengerService passengerService) {
+        this.passengerService = passengerService;
 
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("key.serializer", StringSerializer.class.getName());
+        props.put("value.serializer", StringSerializer.class.getName());
 
+        this.producer = new KafkaProducer<>(props);
+        this.topicName = "my-topic";
+    }
     @PostMapping
     public ResponseEntity<PassengerDTO> create(@RequestBody PassengerDTO dto) {
         PassengerDTO createdPassengerDTO = passengerService.create(dto);
