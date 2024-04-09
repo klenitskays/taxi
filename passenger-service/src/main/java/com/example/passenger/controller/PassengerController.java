@@ -2,6 +2,7 @@ package com.example.passenger.controller;
 
 import com.example.passenger.dto.PassengerDTO;
 import com.example.passenger.service.PassengerService;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,19 +10,41 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.List;
+import java.util.Properties;
+
 @RestController
 @RequestMapping("/passenger")
 @RequiredArgsConstructor
 public class PassengerController {
 
     private final PassengerService passengerService;
+    private final KafkaProducer<String, String> producer;
+    private final String topicName;
+
 
     @PostMapping
     public ResponseEntity<PassengerDTO> create(@RequestBody PassengerDTO dto) {
         PassengerDTO createdPassengerDTO = passengerService.create(dto);
+
+        String message = "Новый пассажир создан: " + createdPassengerDTO.getFirstName() + " " + createdPassengerDTO.getLastName();
+        ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
+        producer.send(record, (metadata, exception) -> {
+            if (exception != null) {
+                // Обработка ошибки отправки сообщения
+                exception.printStackTrace();
+            } else {
+                // Успешная отправка сообщения
+                System.out.println("Сообщение успешно отправлено в Kafka. Topic: " + metadata.topic() +
+                        ", Partition: " + metadata.partition() + ", Offset: " + metadata.offset());
+            }
+        });
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassengerDTO);
     }
 
@@ -82,5 +105,9 @@ public class PassengerController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @PreDestroy
+    public void destroy() {
+        producer.close();
     }
 }
