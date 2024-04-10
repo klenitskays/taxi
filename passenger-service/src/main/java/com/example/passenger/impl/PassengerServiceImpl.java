@@ -9,6 +9,7 @@ import com.example.passenger.service.PassengerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,6 @@ public class PassengerServiceImpl implements PassengerService {
         Passenger savedPassenger = passengerRepository.save(passenger);
         return passengerMapper.toPassengerDTO(savedPassenger);
     }
-
     @Override
     public Page<PassengerDTO> getAllPassengers(Pageable pageable) {
         Page<Passenger> passengerPage = passengerRepository.findAll(pageable);
