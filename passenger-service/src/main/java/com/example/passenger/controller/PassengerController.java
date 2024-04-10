@@ -21,24 +21,19 @@ import java.util.Properties;
 
 @RestController
 @RequestMapping("/passenger")
-@RequiredArgsConstructor
 public class PassengerController {
 
     private final PassengerService passengerService;
     private final KafkaProducer<String, String> producer;
     private final String topicName;
+
     @Autowired
-    public PassengerController(PassengerService passengerService) {
+    public PassengerController(PassengerService passengerService, KafkaProducer<String, String> producer, String topicName) {
         this.passengerService = passengerService;
-
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
-        props.put("key.serializer", StringSerializer.class.getName());
-        props.put("value.serializer", StringSerializer.class.getName());
-
-        this.producer = new KafkaProducer<>(props);
-        this.topicName = "my-topic";
+        this.producer = producer;
+        this.topicName = topicName;
     }
+
     @PostMapping
     public ResponseEntity<PassengerDTO> create(@RequestBody PassengerDTO dto) {
         PassengerDTO createdPassengerDTO = passengerService.create(dto);
@@ -58,6 +53,7 @@ public class PassengerController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassengerDTO);
     }
+
 
     @GetMapping
     public List<PassengerDTO> getAllPassengers(@RequestParam int pageNumber, @RequestParam int pageSize) {
