@@ -14,5 +14,11 @@ public class PassengerDTO {
     private double destinationLongitude;
     private boolean available;
     private int rating;
+    public PassengerDTO() {
+    }
 
+    public PassengerDTO(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

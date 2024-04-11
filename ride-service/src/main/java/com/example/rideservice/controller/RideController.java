@@ -83,7 +83,28 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PutMapping("/{rideId}/accept")
+    public ResponseEntity<RideDTO> acceptRide(@PathVariable("rideId") Long rideId) {
+        DriverClient driverClient = Feign.builder()
+                .contract(new SpringMvcContract())
+                .decoder(new JacksonDecoder())
+                .target(DriverClient.class, "http://localhost:8081");
 
+        RideDTO rideDTO = rideService.acceptRide(Math.toIntExact(rideId));
+        if (rideDTO != null && rideDTO.getDriverId() != null && rideDTO.getDriverId() == 0) {
+            List<DriverDTO> availableDrivers = driverClient.getAvailableDrivers();
+            if (!availableDrivers.isEmpty()) {
+                DriverDTO driverDTO = availableDrivers.get(0);
+                driverClient.toggleDriverAvailability((long) driverDTO.getId());
+
+                rideDTO.setDriverId(driverDTO.getId());
+                RideDTO updatedRideDTO = rideService.updateRide(rideDTO, Math.toIntExact(rideId));
+                return ResponseEntity.ok(updatedRideDTO);
+            }
+        }
+
+        return ResponseEntity.notFound().build();
+    }
     @PutMapping("/{id}")
     public ResponseEntity<RideDTO> updateRide(@RequestBody RideDTO dto, @PathVariable Integer id) {
         RideDTO updatedRideDTO = rideService.updateRide(dto, id);
