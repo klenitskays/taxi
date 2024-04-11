@@ -3,14 +3,12 @@ package com.example.passenger.controller;
 import com.example.passenger.dto.PassengerDTO;
 import com.example.passenger.service.PassengerService;
 import jakarta.annotation.PreDestroy;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.List;
 
@@ -37,10 +35,8 @@ public class PassengerController {
         ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
         producer.send(record, (metadata, exception) -> {
             if (exception != null) {
-                // Обработка ошибки отправки сообщения
                 exception.printStackTrace();
             } else {
-                // Успешная отправка сообщения
                 System.out.println("Сообщение успешно отправлено в Kafka. Topic: " + metadata.topic() +
                         ", Partition: " + metadata.partition() + ", Offset: " + metadata.offset());
             }

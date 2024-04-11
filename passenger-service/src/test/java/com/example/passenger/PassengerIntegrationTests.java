@@ -50,18 +50,15 @@ public class PassengerIntegrationTests {
 
     @AfterEach
     public void tearDown() {
-        // Clean up any resources if required
     }
 
     @Test
     public void testCreatePassenger() throws Exception {
-        // Arrange
         PassengerDTO passengerDTO = new PassengerDTO("John", "Doe");
         PassengerDTO createdPassengerDTO = new PassengerDTO(1, "John", "Doe");
 
         doReturn(createdPassengerDTO).when(passengerService).create(any(PassengerDTO.class));
 
-        // Act & Assert
         mockMvc.perform(post("/passenger")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\":\"John\",\"lastName\":\"Doe\"}"))
@@ -73,14 +70,12 @@ public class PassengerIntegrationTests {
 
     @Test
     public void testGetAllPassengers() throws Exception {
-        // Arrange
         PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
         List<PassengerDTO> passengerDTOList = Collections.singletonList(passengerDTO);
 
         when(passengerService.getAllPassengers())
                 .thenReturn(passengerDTOList);
 
-        // Act & Assert
         mockMvc.perform(get("/passenger"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
@@ -91,13 +86,11 @@ public class PassengerIntegrationTests {
 
     @Test
     public void testGetPassengerById() throws Exception {
-        // Arrange
         PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
 
         when(passengerService.readById(anyLong()))
                 .thenReturn(passengerDTO);
 
-        // Act & Assert
         mockMvc.perform(get("/passenger/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(passengerDTO.getId()))
@@ -107,14 +100,12 @@ public class PassengerIntegrationTests {
 
     @Test
     public void testGetPassengersByLastName() throws Exception {
-        // Arrange
         PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
         List<PassengerDTO> passengerDTOList = Collections.singletonList(passengerDTO);
 
         when(passengerService.readByLastName(anyString()))
                 .thenReturn(passengerDTOList);
 
-        // Act & Assert
         mockMvc.perform(get("/passenger/lastName")
                         .param("lastName", "Doe"))
                 .andExpect(status().isOk())
@@ -126,14 +117,12 @@ public class PassengerIntegrationTests {
 
     @Test
     public void testUpdatePassenger() throws Exception {
-        // Arrange
         PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
         PassengerDTO updatedPassengerDTO = new PassengerDTO(1, "Jane", "Smith");
 
         when(passengerService.update(any(PassengerDTO.class), anyLong()))
                 .thenReturn(updatedPassengerDTO);
 
-        // Act & Assert
         mockMvc.perform(put("/passenger/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\":\"Jane\",\"lastName\":\"Smith\"}"))
@@ -145,10 +134,8 @@ public class PassengerIntegrationTests {
 
     @Test
     public void testDeletePassenger() throws Exception {
-        // Arrange
         doNothing().when(passengerService).delete(anyLong());
 
-        // Act & Assert
         mockMvc.perform(delete("/passenger/{id}", 1))
                 .andExpect(status().isNoContent());
     }
