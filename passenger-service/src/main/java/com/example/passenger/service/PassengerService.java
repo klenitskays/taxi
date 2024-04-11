@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface PassengerService {
     PassengerDTO create(@Valid PassengerDTO dto);
-    Page<PassengerDTO> getAllPassengers(Pageable pageable);
+    List<PassengerDTO> getAllPassengers();
     PassengerDTO readById(Long id);
     List<PassengerDTO> readByLastName(String lastName);
     PassengerDTO update(@Valid PassengerDTO dto, Long id);

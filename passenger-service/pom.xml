@@ -25,8 +25,8 @@
         <jakarta.validation.api.version>3.0.0</jakarta.validation.api.version>
         <kafka.clients>2.8.0</kafka.clients>
         <hamcrest>2.2</hamcrest>
-        <spring.test>5.3.14</spring.test>
         <spring.boot.test.autoconfigure>2.6.2</spring.boot.test.autoconfigure>
+        <javax.servlet.api>4.0.1</javax.servlet.api>
     </properties>
     <dependencies>
         <dependency>
@@ -83,11 +83,6 @@
             <version>${jakarta.validation.api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
@@ -129,13 +124,29 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test-autoconfigure</artifactId>
             <version>${spring.boot.test.autoconfigure}</version>
         </dependency>
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet.api}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet.api}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.test}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

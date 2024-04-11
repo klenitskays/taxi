@@ -21,4 +21,9 @@ public class PassengerDTO {
         this.firstName = firstName;
         this.lastName = lastName;
     }
+    public PassengerDTO(long id, String firstName, String lastName) {
+        this.id = (int) id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

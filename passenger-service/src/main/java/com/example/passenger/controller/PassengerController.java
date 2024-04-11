@@ -51,9 +51,9 @@ public class PassengerController {
 
 
     @GetMapping
-    public ResponseEntity<Page<PassengerDTO>> getAllPassengers(Pageable pageable) {
-        Page<PassengerDTO> passengerPage = passengerService.getAllPassengers(pageable);
-        return ResponseEntity.ok(passengerPage);
+    public ResponseEntity<List<PassengerDTO>> getAllPassengers() {
+        List<PassengerDTO> passengerList = passengerService.getAllPassengers();
+        return ResponseEntity.ok(passengerList);
     }
 
     @GetMapping("/{id}")

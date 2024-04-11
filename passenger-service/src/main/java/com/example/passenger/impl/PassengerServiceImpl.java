@@ -31,9 +31,11 @@ public class PassengerServiceImpl implements PassengerService {
         return passengerMapper.toPassengerDTO(savedPassenger);
     }
     @Override
-    public Page<PassengerDTO> getAllPassengers(Pageable pageable) {
-        Page<Passenger> passengerPage = passengerRepository.findAll(pageable);
-        return passengerPage.map(passengerMapper::toPassengerDTO);
+    public List<PassengerDTO> getAllPassengers() {
+        List<Passenger> passengerList = passengerRepository.findAll();
+        return passengerList.stream()
+                .map(passengerMapper::toPassengerDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

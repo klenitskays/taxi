@@ -69,14 +69,13 @@ public class PassengerParametrizedTests {
                 new PassengerDTO("John", "Doe"),
                 new PassengerDTO("Jane", "Smith")
         );
-        Page<PassengerDTO> passengerPage = new PageImpl<>(passengers, pageable, passengers.size());
-        when(passengerService.getAllPassengers(pageable)).thenReturn(passengerPage);
+        when(passengerService.getAllPassengers()).thenReturn(passengers);
 
-        ResponseEntity<Page<PassengerDTO>> response = passengerController.getAllPassengers(pageable);
+        ResponseEntity<List<PassengerDTO>> response = passengerController.getAllPassengers();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(passengerPage, response.getBody());
+        assertEquals(passengers, response.getBody());
     }
 
     private static Stream<String[]> createPassengerData() {

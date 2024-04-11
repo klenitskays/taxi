@@ -21,10 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -98,15 +95,18 @@ public class PassengerMockitoSpyTests {
     void testGetAllPassengers() {
         // Arrange
         Pageable pageable = mock(Pageable.class);
-        Page<PassengerDTO> passengerPage = mock(Page.class);
-        when(passengerService.getAllPassengers(pageable)).thenReturn(passengerPage);
+        List<PassengerDTO> passengerList = new ArrayList<>();
+        passengerList.add(new PassengerDTO("John", "Doe"));
+        passengerList.add(new PassengerDTO("Jane", "Smith"));
+
+        when(passengerService.getAllPassengers()).thenReturn(passengerList);
 
         // Act
-        ResponseEntity<Page<PassengerDTO>> response = passengerController.getAllPassengers(pageable);
+        ResponseEntity<List<PassengerDTO>> response = passengerController.getAllPassengers();
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(passengerPage);
+        assertThat(response.getBody()).isEqualTo(passengerList);
     }
 
     @Test

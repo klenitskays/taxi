@@ -64,18 +64,16 @@ public class PassengerJUnitTests {
         List<PassengerDTO> passengerList = new ArrayList<>();
         passengerList.add(new PassengerDTO("John", "Doe"));
         passengerList.add(new PassengerDTO("Jane", "Smith"));
-        Page<PassengerDTO> passengerPage = new PageImpl<>(passengerList);
 
-        Pageable pageable = Pageable.unpaged();
-        when(passengerService.getAllPassengers(eq(pageable))).thenReturn(passengerPage);
+        when(passengerService.getAllPassengers()).thenReturn(passengerList);
 
         // Act
-        ResponseEntity<Page<PassengerDTO>> response = passengerController.getAllPassengers(pageable);
+        ResponseEntity<List<PassengerDTO>> response = passengerController.getAllPassengers();
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().getContent().size());
+        assertEquals(2, response.getBody().size());
     }
 
     @Test

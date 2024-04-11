@@ -12,5 +12,4 @@ import java.util.List;
 public interface PassengerRepository extends JpaRepository<Passenger, Long> {
     List<Passenger> findByLastName(String lastName);
     List<Passenger> findByAvailableIsTrue();
-    Page<Passenger> findAll(Pageable pageable);
-}
+    List<Passenger> findAll();}
