@@ -1,6 +1,7 @@
 package com.example.passenger;
 import com.example.passenger.controller.PassengerController;
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.service.PassengerService;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.DisplayName;
@@ -27,29 +28,29 @@ public class PassengerParametrizedTests {
     @ParameterizedTest(name = "Test case #{index} - First Name: {0}, Last Name: {1}")
     @MethodSource("createPassengerData")
     public void testCreate(String firstName, String lastName) {
-        PassengerDTO passengerDTO = new PassengerDTO();
-        passengerDTO.setFirstName(firstName);
-        passengerDTO.setLastName(lastName);
-        when(passengerService.create(passengerDTO)).thenReturn(passengerDTO);
+        PassengerDto passengerDto = new PassengerDto();
+        passengerDto.setFirstName(firstName);
+        passengerDto.setLastName(lastName);
+        when(passengerService.create(passengerDto)).thenReturn(passengerDto);
 
-        ResponseEntity<PassengerDTO> response = passengerController.create(passengerDTO);
+        ResponseEntity<PassengerDto> response = passengerController.create(passengerDto);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(passengerDTO, response.getBody());
+        assertEquals(passengerDto, response.getBody());
     }
 
     @DisplayName("Test readByLastName method")
     @ParameterizedTest(name = "Test case #{index} - Last Name: {0}")
     @MethodSource("lastNameData")
     public void testReadByLastName(String lastName) {
-        List<PassengerDTO> passengers = Arrays.asList(
-                new PassengerDTO("John", lastName),
-                new PassengerDTO("Jane", lastName)
+        List<PassengerDto> passengers = Arrays.asList(
+                new PassengerDto("John", lastName),
+                new PassengerDto("Jane", lastName)
         );
         when(passengerService.readByLastName(lastName)).thenReturn(passengers);
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.readByLastName(lastName);
+        ResponseEntity<List<PassengerDto>> response = passengerController.readByLastName(lastName);
 
         if (!passengers.isEmpty()) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -65,17 +66,19 @@ public class PassengerParametrizedTests {
     @ParameterizedTest(name = "Test case #{index}")
     @MethodSource("pageableData")
     public void testGetAllPassengers(Pageable pageable) {
-        List<PassengerDTO> passengers = Arrays.asList(
-                new PassengerDTO("John", "Doe"),
-                new PassengerDTO("Jane", "Smith")
+        List<PassengerDto> passengers = Arrays.asList(
+                new PassengerDto("John", "Doe"),
+                new PassengerDto("Jane", "Smith")
         );
+        PassengerDtoList passengerDtoList = new PassengerDtoList(passengers);
+
         when(passengerService.getAllPassengers()).thenReturn(passengers);
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.getAllPassengers();
+        ResponseEntity<PassengerDtoList> response = passengerController.getAllPassengers();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(passengers, response.getBody());
+        assertEquals(passengerDtoList, response.getBody());
     }
 
     private static Stream<String[]> createPassengerData() {

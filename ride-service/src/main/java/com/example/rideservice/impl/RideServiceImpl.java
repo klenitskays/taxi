@@ -1,13 +1,18 @@
 package com.example.rideservice.impl;
 
+import com.example.driver.client.DriverClient;
+import com.example.driver.dto.DriverDTO;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.entity.Ride;
 import com.example.rideservice.mapper.RideMapper;
 import com.example.rideservice.repo.RideRepository;
 import com.example.rideservice.service.RideService;
 import com.example.rideservice.status.RideStatus;
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.openfeign.support.SpringMvcContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -79,18 +84,40 @@ public class RideServiceImpl implements RideService {
         rideRepository.deleteById(id);
     }
     @Override
-    public RideDTO acceptRide(Integer rideId) {
-        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+    public RideDTO acceptRide(Long rideId) {
+        Optional<Ride> rideOptional = rideRepository.findById(Math.toIntExact(rideId));
         if (rideOptional.isPresent()) {
             Ride ride = rideOptional.get();
             ride.setStatus(RideStatus.ACCEPTED);
 
             Ride updatedRide = rideRepository.save(ride);
-            return rideMapper.toRideDTO(updatedRide);
+            RideDTO updatedRideDTO = rideMapper.toRideDTO(updatedRide);
+            return updatedRideDTO;
         } else {
             return null;
         }
     }
+
+    @Override
+    public List<DriverDTO> getAvailableDrivers() {
+        DriverClient driverClient = Feign.builder()
+                .contract(new SpringMvcContract())
+                .decoder(new JacksonDecoder())
+                .target(DriverClient.class, "http://localhost:8081");
+
+        return driverClient.getAvailableDrivers();
+    }
+
+    @Override
+    public void toggleDriverAvailability(Long driverId) {
+        DriverClient driverClient = Feign.builder()
+                .contract(new SpringMvcContract())
+                .decoder(new JacksonDecoder())
+                .target(DriverClient.class, "http://localhost:8081");
+
+        driverClient.toggleDriverAvailability(driverId);
+    }
+
 
     @Override
     public RideDTO startRide(Integer rideId) {

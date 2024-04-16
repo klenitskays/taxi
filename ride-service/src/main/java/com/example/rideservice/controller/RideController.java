@@ -3,7 +3,7 @@ package com.example.rideservice.controller;
 import com.example.driver.client.DriverClient;
 import com.example.driver.dto.DriverDTO;
 import com.example.passenger.client.PassengerClient;
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
 import com.example.paymentservice.client.ChargeClient;
 import com.example.paymentservice.entity.ChargeRequest;
 import com.example.paymentservice.entity.Payment;
@@ -37,12 +37,12 @@ public class RideController {
                 .decoder(new JacksonDecoder())
                 .target(PassengerClient.class, "http://localhost:8080");
 
-        List<PassengerDTO> passengers = passengerClient.getAvailablePassenger();
+        List<PassengerDto> passengers = passengerClient.getAvailablePassenger();
         if (!passengers.isEmpty()) {
-            PassengerDTO passengerDTO = passengers.get(0);
-            dto.setPassengerId(passengerDTO.getId());
+            PassengerDto passengerDto = passengers.get(0);
+            dto.setPassengerId(passengerDto.getId());
             RideDTO createdRideDTO = rideService.createRide(dto);
-            passengerClient.togglePassengerAvailability((long) passengerDTO.getId());
+            passengerClient.togglePassengerAvailability((long) passengerDto.getId());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
         }
@@ -84,21 +84,16 @@ public class RideController {
         }
     }
     @PutMapping("/{rideId}/accept")
-    public ResponseEntity<RideDTO> acceptRide(@PathVariable("rideId") Long rideId) {
-        DriverClient driverClient = Feign.builder()
-                .contract(new SpringMvcContract())
-                .decoder(new JacksonDecoder())
-                .target(DriverClient.class, "http://localhost:8081");
-
-        RideDTO rideDTO = rideService.acceptRide(Math.toIntExact(rideId));
-        if (rideDTO != null && rideDTO.getDriverId() != null && rideDTO.getDriverId() == 0) {
-            List<DriverDTO> availableDrivers = driverClient.getAvailableDrivers();
+    public ResponseEntity<RideDTO> acceptRide(@PathVariable("rideId") Integer rideId) {
+        RideDTO updatedRideDTO = rideService.acceptRide(Long.valueOf(rideId));
+        if (updatedRideDTO != null && updatedRideDTO.getDriverId() != null && updatedRideDTO.getDriverId() == 0) {
+            List<DriverDTO> availableDrivers = rideService.getAvailableDrivers();
             if (!availableDrivers.isEmpty()) {
                 DriverDTO driverDTO = availableDrivers.get(0);
-                driverClient.toggleDriverAvailability((long) driverDTO.getId());
+                rideService.toggleDriverAvailability((long) driverDTO.getId());
 
-                rideDTO.setDriverId(driverDTO.getId());
-                RideDTO updatedRideDTO = rideService.updateRide(rideDTO, Math.toIntExact(rideId));
+                updatedRideDTO.setDriverId(driverDTO.getId());
+                updatedRideDTO = rideService.updateRide(updatedRideDTO, rideId);
                 return ResponseEntity.ok(updatedRideDTO);
             }
         }

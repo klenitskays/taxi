@@ -1,6 +1,7 @@
 package com.example.passenger.controller;
 
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.service.PassengerService;
 import jakarta.annotation.PreDestroy;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -28,8 +29,8 @@ public class PassengerController {
     }
 
     @PostMapping
-    public ResponseEntity<PassengerDTO> create(@RequestBody PassengerDTO dto) {
-        PassengerDTO createdPassengerDTO = passengerService.create(dto);
+    public ResponseEntity<PassengerDto> create(@RequestBody PassengerDto dto) {
+        PassengerDto createdPassengerDTO = passengerService.create(dto);
 
         String message = "Новый пассажир создан: " + createdPassengerDTO.getFirstName() + " " + createdPassengerDTO.getLastName();
         ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
@@ -47,14 +48,15 @@ public class PassengerController {
 
 
     @GetMapping
-    public ResponseEntity<List<PassengerDTO>> getAllPassengers() {
-        List<PassengerDTO> passengerList = passengerService.getAllPassengers();
-        return ResponseEntity.ok(passengerList);
+    public ResponseEntity<PassengerDtoList> getAllPassengers() {
+        List<PassengerDto> passengerList = passengerService.getAllPassengers();
+        PassengerDtoList passengerDtoList = new PassengerDtoList(passengerList);
+        return ResponseEntity.ok(passengerDtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PassengerDTO> readById(@PathVariable Long id) {
-        PassengerDTO passengerDTO = passengerService.readById(id);
+    public ResponseEntity<PassengerDto> readById(@PathVariable Long id) {
+        PassengerDto passengerDTO = passengerService.readById(id);
         if (passengerDTO != null) {
             return ResponseEntity.ok(passengerDTO);
         } else {
@@ -63,8 +65,8 @@ public class PassengerController {
     }
 
     @GetMapping("/lastName")
-    public ResponseEntity<List<PassengerDTO>> readByLastName(@RequestParam("lastName") String lastName) {
-        List<PassengerDTO> passengers = passengerService.readByLastName(lastName);
+    public ResponseEntity<List<PassengerDto>> readByLastName(@RequestParam("lastName") String lastName) {
+        List<PassengerDto> passengers = passengerService.readByLastName(lastName);
         if (!passengers.isEmpty()) {
             return ResponseEntity.ok(passengers);
         } else {
@@ -73,11 +75,11 @@ public class PassengerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PassengerDTO> update(
-            @RequestBody PassengerDTO dto,
+    public ResponseEntity<PassengerDto> update(
+            @RequestBody PassengerDto dto,
             @PathVariable Long id
     ) {
-        PassengerDTO updatedPassengerDTO = passengerService.update(dto, id);
+        PassengerDto updatedPassengerDTO = passengerService.update(dto, id);
         if (updatedPassengerDTO != null) {
             return ResponseEntity.ok(updatedPassengerDTO);
         } else {
@@ -91,13 +93,13 @@ public class PassengerController {
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/available")
-    public List<PassengerDTO> getAvailablePassengers() {
-        List<PassengerDTO> passengerDTOs = passengerService.findAvailablePassenger();
+    public List<PassengerDto> getAvailablePassengers() {
+        List<PassengerDto> passengerDTOs = passengerService.findAvailablePassenger();
         return passengerDTOs;
     }
     @PutMapping("/{id}/toggle-availability")
-    public ResponseEntity<PassengerDTO> toggleDriverAvailability(@PathVariable("id") Long id) {
-        PassengerDTO updatedPassengerDTO = passengerService.toggleAvailability(id);
+    public ResponseEntity<PassengerDto> toggleDriverAvailability(@PathVariable("id") Long id) {
+        PassengerDto updatedPassengerDTO = passengerService.toggleAvailability(id);
         if (updatedPassengerDTO != null) {
             return ResponseEntity.ok(updatedPassengerDTO);
         } else {

@@ -1,6 +1,6 @@
 package com.example.passenger.mapper;
 
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
 import com.example.passenger.entity.Passenger;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,14 +10,14 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PassengerMapper {
 
-    PassengerDTO toPassengerDTO(Passenger passenger);
+    PassengerDto toPassengerDto(Passenger passenger);
 
-    List<PassengerDTO> toPassengerDTO(List<Passenger> passengers);
+    List<PassengerDto> toPassengerDto(List<Passenger> passengers);
 
-    Passenger toPassenger(PassengerDTO dto);
+    Passenger toPassenger(PassengerDto dto);
 
     @Mapping(target = "firstName", source = "lastName")
-    default void updatePassengerFromDTO(PassengerDTO dto, @MappingTarget Passenger passenger) {
+    default void updatePassengerFromDTO(PassengerDto dto, @MappingTarget Passenger passenger) {
         passenger.setFirstName(dto.getFirstName());
         passenger.setLastName(dto.getLastName());
         passenger.setContactInfo(dto.getContactInfo());

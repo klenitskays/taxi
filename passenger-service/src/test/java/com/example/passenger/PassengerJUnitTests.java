@@ -1,7 +1,8 @@
 package com.example.passenger;
 
 import com.example.passenger.controller.PassengerController;
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.service.PassengerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -39,13 +40,13 @@ public class PassengerJUnitTests {
 
     @Test
     public void testCreatePassenger() {
-        PassengerDTO passengerDTO = new PassengerDTO();
-        passengerDTO.setFirstName("John");
-        passengerDTO.setLastName("Doe");
+        PassengerDto passengerDto = new PassengerDto();
+        passengerDto.setFirstName("John");
+        passengerDto.setLastName("Doe");
 
-        when(passengerService.create(any(PassengerDTO.class))).thenReturn(passengerDTO);
+        when(passengerService.create(any(PassengerDto.class))).thenReturn(passengerDto);
 
-        ResponseEntity<PassengerDTO> response = passengerController.create(passengerDTO);
+        ResponseEntity<PassengerDto> response = passengerController.create(passengerDto);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -55,26 +56,27 @@ public class PassengerJUnitTests {
 
     @Test
     public void testGetAllPassengers() {
-        List<PassengerDTO> passengerList = new ArrayList<>();
-        passengerList.add(new PassengerDTO("John", "Doe"));
-        passengerList.add(new PassengerDTO("Jane", "Smith"));
+        List<PassengerDto> passengerList = new ArrayList<>();
+        passengerList.add(new PassengerDto("John", "Doe"));
+        passengerList.add(new PassengerDto("Jane", "Smith"));
+        PassengerDtoList passengerDtoList = new PassengerDtoList(passengerList);
 
         when(passengerService.getAllPassengers()).thenReturn(passengerList);
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.getAllPassengers();
+        ResponseEntity<PassengerDtoList> response = passengerController.getAllPassengers();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
+        assertEquals(2, response.getBody().getPassengers().size());
     }
 
     @Test
     public void testReadById() {
         Long passengerId = 1L;
-        PassengerDTO passengerDTO = new PassengerDTO("John", "Doe");
+        PassengerDto passengerDTO = new PassengerDto("John", "Doe");
         when(passengerService.readById(eq(passengerId))).thenReturn(passengerDTO);
 
-        ResponseEntity<PassengerDTO> response = passengerController.readById(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.readById(passengerId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -87,7 +89,7 @@ public class PassengerJUnitTests {
         Long passengerId = 1L;
         when(passengerService.readById(eq(passengerId))).thenReturn(null);
 
-        ResponseEntity<PassengerDTO> response = passengerController.readById(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.readById(passengerId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
@@ -96,11 +98,11 @@ public class PassengerJUnitTests {
     @Test
     public void testReadByLastName() {
         String lastName = "Doe";
-        List<PassengerDTO> passengers = new ArrayList<>();
-        passengers.add(new PassengerDTO("John", "Doe"));
+        List<PassengerDto> passengers = new ArrayList<>();
+        passengers.add(new PassengerDto("John", "Doe"));
         when(passengerService.readByLastName(eq(lastName))).thenReturn(passengers);
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.readByLastName(lastName);
+        ResponseEntity<List<PassengerDto>> response = passengerController.readByLastName(lastName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -114,7 +116,7 @@ public class PassengerJUnitTests {
         String lastName = "Doe";
         when(passengerService.readByLastName(eq(lastName))).thenReturn(new ArrayList<>());
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.readByLastName(lastName);
+        ResponseEntity<List<PassengerDto>> response = passengerController.readByLastName(lastName);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
@@ -123,10 +125,10 @@ public class PassengerJUnitTests {
     @Test
     public void testUpdatePassenger() {
         Long passengerId = 1L;
-        PassengerDTO passengerDTO = new PassengerDTO("John", "Doe");
-        when(passengerService.update(any(PassengerDTO.class), eq(passengerId))).thenReturn(passengerDTO);
+        PassengerDto passengerDto = new PassengerDto("John", "Doe");
+        when(passengerService.update(any(PassengerDto.class), eq(passengerId))).thenReturn(passengerDto);
 
-        ResponseEntity<PassengerDTO> response = passengerController.update(passengerDTO, passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.update(passengerDto, passengerId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -158,12 +160,12 @@ public class PassengerJUnitTests {
 
     @Test
     public void testGetAvailablePassengers() {
-        List<PassengerDTO> passengerList = new ArrayList<>();
-        passengerList.add(new PassengerDTO("John", "Doe"));
-        passengerList.add(new PassengerDTO("Jane", "Smith"));
+        List<PassengerDto> passengerList = new ArrayList<>();
+        passengerList.add(new PassengerDto("John", "Doe"));
+        passengerList.add(new PassengerDto("Jane", "Smith"));
         when(passengerService.findAvailablePassenger()).thenReturn(passengerList);
 
-        List<PassengerDTO> response = passengerController.getAvailablePassengers();
+        List<PassengerDto> response = passengerController.getAvailablePassengers();
 
         assertNotNull(response);
         assertEquals(2, response.size());
@@ -173,10 +175,10 @@ public class PassengerJUnitTests {
     @Test
     public void testTogglePassengerAvailability() {
         Long passengerId = 1L;
-        PassengerDTO passengerDTO = new PassengerDTO("John", "Doe");
+        PassengerDto passengerDTO = new PassengerDto("John", "Doe");
         when(passengerService.toggleAvailability(eq(passengerId))).thenReturn(passengerDTO);
 
-        ResponseEntity<PassengerDTO> response = passengerController.toggleDriverAvailability(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.toggleDriverAvailability(passengerId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

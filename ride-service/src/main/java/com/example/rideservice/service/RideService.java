@@ -1,5 +1,6 @@
 package com.example.rideservice.service;
 
+import com.example.driver.dto.DriverDTO;
 import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.status.RideStatus;
 import jakarta.validation.Valid;
@@ -27,7 +28,8 @@ RideService {
 
     RideDTO completeRide(Integer rideId);
 
-    RideDTO acceptRide(Integer rideId);
-
+    RideDTO acceptRide(Long rideId);
+    List<DriverDTO> getAvailableDrivers();
+    void toggleDriverAvailability(Long driverId);
     RideDTO startRide(Integer rideId);
 }

@@ -1,41 +1,31 @@
 package com.example.passenger;
 
-import com.example.passenger.controller.PassengerController;
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.service.PassengerService;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 import java.util.List;
 
+import static io.restassured.RestAssured.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.equalTo;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 public class PassengerIntegrationTests {
-    private MockMvc mockMvc;
-
-    @Autowired
-    private PassengerController passengerController;
-
     @MockBean
     private PassengerService passengerService;
 
@@ -43,100 +33,126 @@ public class PassengerIntegrationTests {
     private KafkaProducer<String, String> kafkaProducer;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(passengerController).build();
-    }
-
-    @AfterEach
-    public void tearDown() {
-    }
-
-    @Test
-    public void testCreatePassenger() throws Exception {
-        PassengerDTO passengerDTO = new PassengerDTO("John", "Doe");
-        PassengerDTO createdPassengerDTO = new PassengerDTO(1, "John", "Doe");
-
-        doReturn(createdPassengerDTO).when(passengerService).create(any(PassengerDTO.class));
-
-        mockMvc.perform(post("/passenger")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"firstName\":\"John\",\"lastName\":\"Doe\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(createdPassengerDTO.getId()))
-                .andExpect(jsonPath("$.firstName").value(createdPassengerDTO.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(createdPassengerDTO.getLastName()));
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = 8080;
     }
 
     @Test
-    public void testGetAllPassengers() throws Exception {
-        PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
-        List<PassengerDTO> passengerDTOList = Collections.singletonList(passengerDTO);
+    public void testCreatePassenger() {
+        PassengerDto passengerDto = new PassengerDto("John", "Doe");
+        PassengerDto createdPassengerDto = new PassengerDto(1, "John", "Doe");
 
-        when(passengerService.getAllPassengers())
-                .thenReturn(passengerDTOList);
+        when(passengerService.create(any(PassengerDto.class))).thenReturn(createdPassengerDto);
 
-        mockMvc.perform(get("/passenger"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(passengerDTO.getId()))
-                .andExpect(jsonPath("$[0].firstName").value(passengerDTO.getFirstName()))
-                .andExpect(jsonPath("$[0].lastName").value(passengerDTO.getLastName()));
+        given()
+                .contentType(ContentType.JSON)
+                .body(passengerDto)
+                .when()
+                .post("/passenger")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("id", equalTo(createdPassengerDto.getId()))
+                .body("firstName", equalTo(createdPassengerDto.getFirstName()))
+                .body("lastName", equalTo(createdPassengerDto.getLastName()));
+
+        verify(passengerService, times(1)).create(any(PassengerDto.class));
     }
 
     @Test
-    public void testGetPassengerById() throws Exception {
-        PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
+    public void testGetAllPassengers() {
+        PassengerDto passengerDto = new PassengerDto(1, "John", "Doe");
+        List<PassengerDto> passengerDtoList = Collections.singletonList(passengerDto);
+        PassengerDtoList passengerDtoListWrapper = new PassengerDtoList(passengerDtoList);
 
-        when(passengerService.readById(anyLong()))
-                .thenReturn(passengerDTO);
+        when(passengerService.getAllPassengers()).thenReturn(passengerDtoList);
 
-        mockMvc.perform(get("/passenger/{id}", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(passengerDTO.getId()))
-                .andExpect(jsonPath("$.firstName").value(passengerDTO.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(passengerDTO.getLastName()));
+        given()
+                .when()
+                .get("/passenger")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("passengers.size()", equalTo(1))
+                .body("passengers[0].id", equalTo(passengerDto.getId()))
+                .body("passengers[0].firstName", equalTo(passengerDto.getFirstName()))
+                .body("passengers[0].lastName", equalTo(passengerDto.getLastName()));
+
+        verify(passengerService, times(1)).getAllPassengers();
     }
 
     @Test
-    public void testGetPassengersByLastName() throws Exception {
-        PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
-        List<PassengerDTO> passengerDTOList = Collections.singletonList(passengerDTO);
+    public void testGetPassengerById() {
+        PassengerDto passengerDto = new PassengerDto(1, "John", "Doe");
 
-        when(passengerService.readByLastName(anyString()))
-                .thenReturn(passengerDTOList);
+        when(passengerService.readById(anyLong())).thenReturn(passengerDto);
 
-        mockMvc.perform(get("/passenger/lastName")
-                        .param("lastName", "Doe"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(passengerDTO.getId()))
-                .andExpect(jsonPath("$[0].firstName").value(passengerDTO.getFirstName()))
-                .andExpect(jsonPath("$[0].lastName").value(passengerDTO.getLastName()));
+        given()
+                .when()
+                .get("/passenger/{id}", 1)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", equalTo(passengerDto.getId()))
+                .body("firstName", equalTo(passengerDto.getFirstName()))
+                .body("lastName", equalTo(passengerDto.getLastName()));
+
+        verify(passengerService, times(1)).readById(anyLong());
     }
 
     @Test
-    public void testUpdatePassenger() throws Exception {
-        PassengerDTO passengerDTO = new PassengerDTO(1, "John", "Doe");
-        PassengerDTO updatedPassengerDTO = new PassengerDTO(1, "Jane", "Smith");
+    public void testGetPassengersByLastName() {
+        PassengerDto passengerDTO = new PassengerDto(1, "John", "Doe");
+        List<PassengerDto> passengerDTOList = Collections.singletonList(passengerDTO);
 
-        when(passengerService.update(any(PassengerDTO.class), anyLong()))
-                .thenReturn(updatedPassengerDTO);
+        when(passengerService.readByLastName(anyString())).thenReturn(passengerDTOList);
 
-        mockMvc.perform(put("/passenger/{id}", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"firstName\":\"Jane\",\"lastName\":\"Smith\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(updatedPassengerDTO.getId()))
-                .andExpect(jsonPath("$.firstName").value(updatedPassengerDTO.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(updatedPassengerDTO.getLastName()));
+        given()
+                .param("lastName", "Doe")
+                .when()
+                .get("/passenger/lastName")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", equalTo(1))
+                .body("[0].id", equalTo(passengerDTO.getId()))
+                .body("[0].firstName", equalTo(passengerDTO.getFirstName()))
+                .body("[0].lastName", equalTo(passengerDTO.getLastName()));
+
+        verify(passengerService, times(1)).readByLastName(anyString());
     }
 
     @Test
-    public void testDeletePassenger() throws Exception {
-        doNothing().when(passengerService).delete(anyLong());
+    public void testUpdatePassenger() {
+        PassengerDto passengerDto = new PassengerDto(1, "John", "Doe");
+        PassengerDto updatedPassengerDto = new PassengerDto(1, "Jane", "Smith");
 
-        mockMvc.perform(delete("/passenger/{id}", 1))
-                .andExpect(status().isNoContent());
+        when(passengerService.update(any(PassengerDto.class), anyLong())).thenReturn(updatedPassengerDto);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(passengerDto)
+                .when()
+                .put("/passenger/{id}", 1)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", equalTo(updatedPassengerDto.getId()))
+                .body("firstName", equalTo(updatedPassengerDto.getFirstName()))
+                .body("lastName", equalTo(updatedPassengerDto.getLastName()));
+
+        verify(passengerService, times(1)).update(any(PassengerDto.class), anyLong());
+    }
+    @Test
+    public void testDeletePassenger() {
+        long passengerId = 1;
+
+        doNothing().when(passengerService).delete(passengerId);
+
+        given()
+                .when()
+                .delete("/passenger/{id}", passengerId)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(passengerService, times(1)).delete(passengerId);
     }
 }

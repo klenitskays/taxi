@@ -1,7 +1,8 @@
 package com.example.passenger;
 
 import com.example.passenger.controller.PassengerController;
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.kafka.KafkaConfig;
 import com.example.passenger.service.PassengerService;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -49,15 +50,15 @@ public class PassengerMockitoSpyTests {
     @Test
     @DisplayName("Test create method")
     void testCreate() throws Exception {
-        PassengerDTO passengerDTO = new PassengerDTO();
-        passengerDTO.setFirstName("John");
-        passengerDTO.setLastName("Doe");
+        PassengerDto passengerDto = new PassengerDto();
+        passengerDto.setFirstName("John");
+        passengerDto.setLastName("Doe");
 
-        PassengerDTO createdPassengerDTO = new PassengerDTO();
-        createdPassengerDTO.setFirstName("John");
-        createdPassengerDTO.setLastName("Doe");
+        PassengerDto createdPassengerDto = new PassengerDto();
+        createdPassengerDto.setFirstName("John");
+        createdPassengerDto.setLastName("Doe");
 
-        when(passengerService.create(passengerDTO)).thenReturn(createdPassengerDTO);
+        when(passengerService.create(passengerDto)).thenReturn(createdPassengerDto);
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -72,10 +73,10 @@ public class PassengerMockitoSpyTests {
         producerField.setAccessible(true);
         producerField.set(passengerController, spiedProducer);
 
-        ResponseEntity<PassengerDTO> response = passengerController.create(passengerDTO);
+        ResponseEntity<PassengerDto> response = passengerController.create(passengerDto);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isEqualTo(createdPassengerDTO);
+        assertThat(response.getBody()).isEqualTo(createdPassengerDto);
 
         verify(spiedProducer).send(any(), any());
     }
@@ -84,29 +85,31 @@ public class PassengerMockitoSpyTests {
     @DisplayName("Test getAllPassengers method")
     void testGetAllPassengers() {
         Pageable pageable = mock(Pageable.class);
-        List<PassengerDTO> passengerList = new ArrayList<>();
-        passengerList.add(new PassengerDTO("John", "Doe"));
-        passengerList.add(new PassengerDTO("Jane", "Smith"));
+        List<PassengerDto> passengerList = new ArrayList<>();
+        passengerList.add(new PassengerDto("John", "Doe"));
+        passengerList.add(new PassengerDto("Jane", "Smith"));
+        PassengerDtoList passengerDtoList = new PassengerDtoList(passengerList);
 
         when(passengerService.getAllPassengers()).thenReturn(passengerList);
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.getAllPassengers();
+        ResponseEntity<PassengerDtoList> response = passengerController.getAllPassengers();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(passengerList);
+        assertThat(response.getBody().getPassengers()).isEqualTo(passengerList);
     }
+
 
     @Test
     @DisplayName("Test readById method with existing passenger")
     void testReadByIdExistingPassenger() {
         Long passengerId = 1L;
-        PassengerDTO passengerDTO = new PassengerDTO();
-        when(passengerService.readById(passengerId)).thenReturn(passengerDTO);
+        PassengerDto passengerDto = new PassengerDto();
+        when(passengerService.readById(passengerId)).thenReturn(passengerDto);
 
-        ResponseEntity<PassengerDTO> response = passengerController.readById(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.readById(passengerId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(passengerDTO);
+        assertThat(response.getBody()).isEqualTo(passengerDto);
     }
 
     @Test
@@ -115,7 +118,7 @@ public class PassengerMockitoSpyTests {
         Long passengerId = 1L;
         when(passengerService.readById(passengerId)).thenReturn(null);
 
-        ResponseEntity<PassengerDTO> response = passengerController.readById(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.readById(passengerId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
@@ -125,10 +128,10 @@ public class PassengerMockitoSpyTests {
     @DisplayName("Test readByLastName method with existing passengers")
     void testReadByLastNameExistingPassengers() {
         String lastName = "Doe";
-        List<PassengerDTO> passengers = Arrays.asList(new PassengerDTO(), new PassengerDTO());
+        List<PassengerDto> passengers = Arrays.asList(new PassengerDto(), new PassengerDto());
         when(passengerService.readByLastName(lastName)).thenReturn(passengers);
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.readByLastName(lastName);
+        ResponseEntity<List<PassengerDto>> response = passengerController.readByLastName(lastName);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(passengers);
@@ -140,7 +143,7 @@ public class PassengerMockitoSpyTests {
         String lastName = "Doe";
         when(passengerService.readByLastName(lastName)).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<PassengerDTO>> response = passengerController.readByLastName(lastName);
+        ResponseEntity<List<PassengerDto>> response = passengerController.readByLastName(lastName);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
@@ -150,25 +153,25 @@ public class PassengerMockitoSpyTests {
     @DisplayName("Test update method with existing passenger")
     void testUpdateExistingPassenger() {
         Long passengerId= 1L;
-        PassengerDTO passengerDTO = new PassengerDTO();
+        PassengerDto passengerDto = new PassengerDto();
 
-        when(passengerService.update(passengerDTO, passengerId)).thenReturn(passengerDTO);
+        when(passengerService.update(passengerDto, passengerId)).thenReturn(passengerDto);
 
-        ResponseEntity<PassengerDTO> response = passengerController.update(passengerDTO, passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.update(passengerDto, passengerId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(passengerDTO);
+        assertThat(response.getBody()).isEqualTo(passengerDto);
     }
 
     @Test
     @DisplayName("Test update method with non-existing passenger")
     void testUpdateNonExistingPassenger() {
         Long passengerId = 1L;
-        PassengerDTO passengerDTO = new PassengerDTO();
+        PassengerDto passengerDto = new PassengerDto();
 
-        when(passengerService.update(passengerDTO, passengerId)).thenReturn(null);
+        when(passengerService.update(passengerDto, passengerId)).thenReturn(null);
 
-        ResponseEntity<PassengerDTO> response = passengerController.update(passengerDTO, passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.update(passengerDto, passengerId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
@@ -190,10 +193,10 @@ public class PassengerMockitoSpyTests {
     @Test
     @DisplayName("Test getAvailablePassengers method")
     void testGetAvailablePassengers() {
-        List<PassengerDTO> availablePassengers = Arrays.asList(new PassengerDTO(), new PassengerDTO());
+        List<PassengerDto> availablePassengers = Arrays.asList(new PassengerDto(), new PassengerDto());
         when(passengerService.findAvailablePassenger()).thenReturn(availablePassengers);
 
-        List<PassengerDTO> response = passengerController.getAvailablePassengers();
+        List<PassengerDto> response = passengerController.getAvailablePassengers();
 
         assertThat(response).isEqualTo(availablePassengers);
     }
@@ -202,14 +205,14 @@ public class PassengerMockitoSpyTests {
     @DisplayName("Test toggleDriverAvailability method with existing passenger")
     void testToggleDriverAvailabilityExistingPassenger() {
         Long passengerId = 1L;
-        PassengerDTO passengerDTO = new PassengerDTO();
+        PassengerDto passengerDto = new PassengerDto();
 
-        when(passengerService.toggleAvailability(passengerId)).thenReturn(passengerDTO);
+        when(passengerService.toggleAvailability(passengerId)).thenReturn(passengerDto);
 
-        ResponseEntity<PassengerDTO> response = passengerController.toggleDriverAvailability(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.toggleDriverAvailability(passengerId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(passengerDTO);
+        assertThat(response.getBody()).isEqualTo(passengerDto);
     }
 
     @Test
@@ -219,7 +222,7 @@ public class PassengerMockitoSpyTests {
 
         when(passengerService.toggleAvailability(passengerId)).thenReturn(null);
 
-        ResponseEntity<PassengerDTO> response = passengerController.toggleDriverAvailability(passengerId);
+        ResponseEntity<PassengerDto> response = passengerController.toggleDriverAvailability(passengerId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
