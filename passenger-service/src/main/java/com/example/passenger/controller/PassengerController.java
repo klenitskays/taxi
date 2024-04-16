@@ -7,6 +7,7 @@ import jakarta.annotation.PreDestroy;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,6 @@ public class PassengerController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassengerDTO);
     }
-
 
     @GetMapping
     public ResponseEntity<PassengerDtoList> getAllPassengers() {
@@ -89,8 +89,12 @@ public class PassengerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        passengerService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            passengerService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
     @GetMapping("/available")
     public List<PassengerDto> getAvailablePassengers() {
