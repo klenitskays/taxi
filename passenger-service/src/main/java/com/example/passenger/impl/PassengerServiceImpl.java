@@ -52,8 +52,6 @@ public class PassengerServiceImpl implements PassengerService {
                 .collect(Collectors.toList());
     }
 
-
-
     @Override
     public PassengerDto update(@Valid PassengerDto dto, Long id) {
         return passengerRepository.findById(id)

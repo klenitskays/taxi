@@ -1,6 +1,6 @@
 package com.example.driver.client;
 
-import com.example.driver.dto.DriverDTO;
+import com.example.driver.dto.DriverDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface DriverClient {
 
     @GetMapping("/driver/available")
-    List<DriverDTO> getAvailableDrivers();
+    List<DriverDto> getAvailableDrivers();
     @PutMapping("/driver/{id}/toggle-availability")
     void toggleDriverAvailability(@PathVariable("id") Long id);
 }

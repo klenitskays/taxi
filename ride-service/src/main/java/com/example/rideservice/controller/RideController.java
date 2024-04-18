@@ -1,13 +1,13 @@
 package com.example.rideservice.controller;
 
 import com.example.driver.client.DriverClient;
-import com.example.driver.dto.DriverDTO;
+import com.example.driver.dto.DriverDto;
 import com.example.passenger.client.PassengerClient;
 import com.example.passenger.dto.PassengerDto;
 import com.example.paymentservice.client.ChargeClient;
 import com.example.paymentservice.entity.ChargeRequest;
 import com.example.paymentservice.entity.Payment;
-import com.example.rideservice.dto.RideDTO;
+import com.example.rideservice.dto.RideDto;
 import com.example.rideservice.service.RideService;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
@@ -31,7 +31,7 @@ public class RideController {
     private final RideService rideService;
 
     @PostMapping
-    public ResponseEntity<RideDTO> createRide(@RequestBody RideDTO dto) {
+    public ResponseEntity<RideDto> createRide(@RequestBody RideDto dto) {
         PassengerClient passengerClient = Feign.builder()
                 .contract(new SpringMvcContract())
                 .decoder(new JacksonDecoder())
@@ -41,78 +41,78 @@ public class RideController {
         if (!passengers.isEmpty()) {
             PassengerDto passengerDto = passengers.get(0);
             dto.setPassengerId(passengerDto.getId());
-            RideDTO createdRideDTO = rideService.createRide(dto);
+            RideDto createdRideDto = rideService.createRide(dto);
             passengerClient.togglePassengerAvailability((long) passengerDto.getId());
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdRideDto);
         }
 
         return ResponseEntity.notFound().build();
     }
     @GetMapping
-    public ResponseEntity<Page<RideDTO>> getAllRides(Pageable pageable) {
-        Page<RideDTO> ridePage = rideService.getAllRides(pageable);
+    public ResponseEntity<Page<RideDto>> getAllRides(Pageable pageable) {
+        Page<RideDto> ridePage = rideService.getAllRides(pageable);
         return ResponseEntity.ok(ridePage);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<RideDTO> getRideById(@PathVariable Integer id) {
-        RideDTO rideDTO = rideService.getRideById(id);
-        if (rideDTO != null) {
-            return ResponseEntity.ok(rideDTO);
+    public ResponseEntity<RideDto> getRideById(@PathVariable Integer id) {
+        RideDto rideDto = rideService.getRideById(id);
+        if (rideDto != null) {
+            return ResponseEntity.ok(rideDto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/passenger")
-    public ResponseEntity<List<RideDTO>> getRideByPassengerId(@RequestParam("passengerId") Integer passengerId) {
-        List<RideDTO> rideDTO = rideService.getRideByPassengerId(passengerId);
-        if (rideDTO != null) {
-            return ResponseEntity.ok(rideDTO);
+    public ResponseEntity<List<RideDto>> getRideByPassengerId(@RequestParam("passengerId") Integer passengerId) {
+        List<RideDto> rideDto = rideService.getRideByPassengerId(passengerId);
+        if (rideDto != null) {
+            return ResponseEntity.ok(rideDto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/driver")
-    public ResponseEntity<List<RideDTO>> getRideByDriverId(@RequestParam("driverId") Integer driverId) {
-        List<RideDTO> rideDTO = rideService.getRideByDriverId(driverId);
-        if (rideDTO != null) {
-            return ResponseEntity.ok(rideDTO);
+    public ResponseEntity<List<RideDto>> getRideByDriverId(@RequestParam("driverId") Integer driverId) {
+        List<RideDto> rideDto = rideService.getRideByDriverId(driverId);
+        if (rideDto != null) {
+            return ResponseEntity.ok(rideDto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
     @PutMapping("/{rideId}/accept")
-    public ResponseEntity<RideDTO> acceptRide(@PathVariable("rideId") Integer rideId) {
-        RideDTO updatedRideDTO = rideService.acceptRide(Long.valueOf(rideId));
-        if (updatedRideDTO != null && updatedRideDTO.getDriverId() != null && updatedRideDTO.getDriverId() == 0) {
-            List<DriverDTO> availableDrivers = rideService.getAvailableDrivers();
+    public ResponseEntity<RideDto> acceptRide(@PathVariable("rideId") Integer rideId) {
+        RideDto updatedRideDto = rideService.acceptRide(Long.valueOf(rideId));
+        if (updatedRideDto != null && updatedRideDto.getDriverId() != null && updatedRideDto.getDriverId() == 0) {
+            List<DriverDto> availableDrivers = rideService.getAvailableDrivers();
             if (!availableDrivers.isEmpty()) {
-                DriverDTO driverDTO = availableDrivers.get(0);
-                rideService.toggleDriverAvailability((long) driverDTO.getId());
+                DriverDto driverDto = availableDrivers.get(0);
+                rideService.toggleDriverAvailability((long) driverDto.getId());
 
-                updatedRideDTO.setDriverId(driverDTO.getId());
-                updatedRideDTO = rideService.updateRide(updatedRideDTO, rideId);
-                return ResponseEntity.ok(updatedRideDTO);
+                updatedRideDto.setDriverId(driverDto.getId());
+                updatedRideDto = rideService.updateRide(updatedRideDto, rideId);
+                return ResponseEntity.ok(updatedRideDto);
             }
         }
 
         return ResponseEntity.notFound().build();
     }
     @PutMapping("/{id}")
-    public ResponseEntity<RideDTO> updateRide(@RequestBody RideDTO dto, @PathVariable Integer id) {
-        RideDTO updatedRideDTO = rideService.updateRide(dto, id);
-        if (updatedRideDTO != null) {
-            return ResponseEntity.ok(updatedRideDTO);
+    public ResponseEntity<RideDto> updateRide(@RequestBody RideDto dto, @PathVariable Integer id) {
+        RideDto updatedRideDto = rideService.updateRide(dto, id);
+        if (updatedRideDto != null) {
+            return ResponseEntity.ok(updatedRideDto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/{rideId}/cancel")
-    public ResponseEntity<RideDTO> cancelRide(@PathVariable Integer rideId) {
-        RideDTO cancelledRide = rideService.cancelRide(rideId);
+    public ResponseEntity<RideDto> cancelRide(@PathVariable Integer rideId) {
+        RideDto cancelledRide = rideService.cancelRide(rideId);
         if (cancelledRide != null) {
             return ResponseEntity.ok(cancelledRide);
         } else {
@@ -121,8 +121,8 @@ public class RideController {
     }
 
     @PostMapping("/{rideId}/complete")
-    public ResponseEntity<RideDTO> completeRide(@PathVariable("rideId") Integer rideId) {
-        RideDTO completedRide = rideService.completeRide(rideId);
+    public ResponseEntity<RideDto> completeRide(@PathVariable("rideId") Integer rideId) {
+        RideDto completedRide = rideService.completeRide(rideId);
         if (completedRide != null) {
             int price = completedRide.getPrice();
             ChargeRequest chargeRequest = new ChargeRequest();
@@ -143,14 +143,14 @@ public class RideController {
                 driverClient.toggleDriverAvailability(Long.valueOf(completedRide.getDriverId()));
             }
 
-            RideDTO rideDTO = rideService.completeRide(rideId);
-            if (rideDTO != null && rideDTO.getPassengerId() != null) {
+            RideDto rideDto = rideService.completeRide(rideId);
+            if (rideDto != null && rideDto.getPassengerId() != null) {
                 PassengerClient passengerClient = Feign.builder()
                         .contract(new SpringMvcContract())
                         .decoder(new JacksonDecoder())
                         .target(PassengerClient.class, "http://localhost:8080");
 
-                passengerClient.togglePassengerAvailability(Long.valueOf(rideDTO.getPassengerId()));
+                passengerClient.togglePassengerAvailability(Long.valueOf(rideDto.getPassengerId()));
             }
 
             return ResponseEntity.ok(completedRide);
@@ -161,8 +161,8 @@ public class RideController {
 
 
     @PostMapping("/{rideId}/start")
-    public ResponseEntity<RideDTO> startRide(@PathVariable Integer rideId) {
-        RideDTO inProgressRide = rideService.startRide(rideId);
+    public ResponseEntity<RideDto> startRide(@PathVariable Integer rideId) {
+        RideDto inProgressRide = rideService.startRide(rideId);
         if (inProgressRide != null) {
             return ResponseEntity.ok(inProgressRide);
         } else {

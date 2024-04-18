@@ -1,6 +1,6 @@
 package com.example.driver.impl;
 
-import com.example.driver.dto.DriverDTO;
+import com.example.driver.dto.DriverDto;
 import com.example.driver.entity.Driver;
 import com.example.driver.mapper.DriverMapper;
 import com.example.driver.repo.DriverRepository;
@@ -23,53 +23,53 @@ public class DriverServiceImpl implements DriverService {
     private final DriverMapper driverMapper;
 
     @Override
-    public DriverDTO create(DriverDTO dto) {
+    public DriverDto create(DriverDto dto) {
         Driver driver = driverMapper.toDriver(dto);
         Driver savedDriver = driverRepository.save(driver);
-        return driverMapper.toDriverDTO(savedDriver);
+        return driverMapper.toDriverDto(savedDriver);
     }
 
     @Override
-    public Page<DriverDTO> getAllDrivers(Pageable pageable) {
+    public Page<DriverDto> getAllDrivers(Pageable pageable) {
         Page<Driver> driverPage = driverRepository.findAll(pageable);
-        return driverPage.map(driverMapper::toDriverDTO);
+        return driverPage.map(driverMapper::toDriverDto);
     }
 
     @Override
-    public DriverDTO readById(Long id) {
+    public DriverDto readById(Long id) {
         Optional<Driver> optionalDriver = driverRepository.findById(id);
         if (optionalDriver.isPresent()) {
             Driver driver = optionalDriver.get();
-            return driverMapper.toDriverDTO(driver);
+            return driverMapper.toDriverDto(driver);
         }
         return null;
     }
 
     @Override
-    public List<DriverDTO> readByLastName(String lastName) {
+    public List<DriverDto> readByLastName(String lastName) {
         List<Driver> drivers = driverRepository.findByLastName(lastName);
         return drivers.stream()
-                .map(driverMapper::toDriverDTO)
+                .map(driverMapper::toDriverDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<DriverDTO> findAvailableDrivers() {
+    public List<DriverDto> findAvailableDrivers() {
         List<Driver> availableDrivers = driverRepository.findByAvailableIsTrue();
         return availableDrivers.stream()
-                .map(driverMapper::toDriverDTO)
+                .map(driverMapper::toDriverDto)
                 .collect(Collectors.toList());
     }
 
 
 
     @Override
-    public DriverDTO update(DriverDTO dto, Long id) {
+    public DriverDto update(DriverDto dto, Long id) {
         return driverRepository.findById(id)
                 .map(existingDriver -> {
-                    driverMapper.updateDriverFromDTO(dto, existingDriver);
+                    driverMapper.updateDriverFromDto(dto, existingDriver);
                     Driver savedDriver = driverRepository.save(existingDriver);
-                    return driverMapper.toDriverDTO(savedDriver);
+                    return driverMapper.toDriverDto(savedDriver);
                 })
                 .orElse(null);
     }
@@ -80,18 +80,18 @@ public class DriverServiceImpl implements DriverService {
 
     @NotNull
     @Override
-    public DriverDTO getDriver(DriverDTO dto, Driver driver) {
-        driverMapper.updateDriverFromDTO(dto, driver);
-        return driverMapper.toDriverDTO(driver);
+    public DriverDto getDriver(DriverDto dto, Driver driver) {
+        driverMapper.updateDriverFromDto(dto, driver);
+        return driverMapper.toDriverDto(driver);
     }
     @Override
-    public DriverDTO toggleAvailability(Long id) {
+    public DriverDto toggleAvailability(Long id) {
         Optional<Driver> optionalDriver = driverRepository.findById(id);
         if (optionalDriver.isPresent()) {
             Driver driver = optionalDriver.get();
             driver.setAvailable(!driver.getAvailable());
             Driver savedDriver = driverRepository.save(driver);
-            return driverMapper.toDriverDTO(savedDriver);
+            return driverMapper.toDriverDto(savedDriver);
         }
         return null;
     }

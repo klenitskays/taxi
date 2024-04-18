@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class RideDTO {
+public class RideDto {
     private Integer id;
     private Integer passengerId;
     private Integer driverId;

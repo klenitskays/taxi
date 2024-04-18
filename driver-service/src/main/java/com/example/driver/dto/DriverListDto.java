@@ -2,18 +2,18 @@ package com.example.driver.dto;
 
 import java.util.List;
 
-public class DriverListDTO {
-    private List<DriverDTO> drivers;
+public class DriverListDto {
+    private List<DriverDto> drivers;
 
-    public DriverListDTO(List<DriverDTO> drivers) {
+    public DriverListDto(List<DriverDto> drivers) {
         this.drivers = drivers;
     }
 
-    public List<DriverDTO> getDrivers() {
+    public List<DriverDto> getDrivers() {
         return drivers;
     }
 
-    public void setDrivers(List<DriverDTO> drivers) {
+    public void setDrivers(List<DriverDto> drivers) {
         this.drivers = drivers;
     }
 }

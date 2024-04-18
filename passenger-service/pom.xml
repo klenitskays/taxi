@@ -27,6 +27,8 @@
         <hamcrest>2.2</hamcrest>
         <spring.boot.test.autoconfigure>2.6.2</spring.boot.test.autoconfigure>
         <javax.servlet.api>4.0.1</javax.servlet.api>
+        <cucumber.java>6.11.0</cucumber.java>
+        <cucumber.junit>6.11.0</cucumber.junit>
     </properties>
     <dependencies>
         <dependency>
@@ -142,6 +144,18 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${javax.servlet.api}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.java}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.junit}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
