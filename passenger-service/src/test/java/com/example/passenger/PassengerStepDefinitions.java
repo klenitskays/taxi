@@ -2,6 +2,7 @@ package com.example.passenger;
 
 import com.example.passenger.controller.PassengerController;
 import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.service.PassengerService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -14,7 +15,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class PassengerStepDefinitions {
@@ -33,8 +39,12 @@ public class PassengerStepDefinitions {
     private ResponseEntity<PassengerDto> responseEntity;
     private PassengerDto createdPassengerDto;
     private PassengerDto updatedPassengerDto;
-
-
+    private ResponseEntity<PassengerDtoList> responseEntityList;
+    private List<PassengerDto> allPassengers;
+    private ResponseEntity<Void> responseEntityDelete;
+    private ResponseEntity<List<PassengerDto>> responseEntityLastName;
+    private List<PassengerDto> availablePassengers;
+    private ResponseEntity<List<PassengerDto>> responseEntityAvailable;
     public PassengerStepDefinitions() {
         MockitoAnnotations.openMocks(this);
         passengerController = new PassengerController(passengerService, producer, topicName);
@@ -122,4 +132,83 @@ public class PassengerStepDefinitions {
         Assertions.assertEquals(1, updatedPassengerDto.getId());
     }
 
+    @Given("The request for getting all passengers")
+    public void theRequestForGettingAllPassengers() {
+        List<PassengerDto> passengers = new ArrayList<>();
+        PassengerDto passenger1 = new PassengerDto();
+        passenger1.setId(1);
+        passenger1.setFirstName("John");
+        passenger1.setLastName("Doe");
+        passengers.add(passenger1);
+        PassengerDto passenger2 = new PassengerDto();
+        passenger2.setId(2);
+        passenger2.setFirstName("Jane");
+        passenger2.setLastName("Smith");
+        passengers.add(passenger2);
+
+        when(passengerService.getAllPassengers()).thenReturn(passengers);
+    }
+
+    @When("Get all passengers")
+    public void getAllPassengers() {
+        responseEntityList = passengerController.getAllPassengers();
+        allPassengers = responseEntityList.getBody().getPassengers();
+    }
+
+    @Then("A response with all passengers")
+    public void aResponseWithAllPassengers() {
+        System.out.println("All passengers: " + allPassengers);
+        Assertions.assertEquals(HttpStatus.OK, responseEntityList.getStatusCode());
+        Assertions.assertNotNull(allPassengers);
+        Assertions.assertEquals(2, allPassengers.size());
+
+        PassengerDto passenger1 = allPassengers.get(0);
+        Assertions.assertEquals(1, passenger1.getId());
+        Assertions.assertEquals("John", passenger1.getFirstName());
+        Assertions.assertEquals("Doe", passenger1.getLastName());
+
+        PassengerDto passenger2 = allPassengers.get(1);
+        Assertions.assertEquals(2, passenger2.getId());
+        Assertions.assertEquals("Jane", passenger2.getFirstName());
+        Assertions.assertEquals("Smith", passenger2.getLastName());
+    }
+
+    @Given("The request for deleting passenger by id")
+    public void theRequestForDeletingPassengerById() {
+        doNothing().when(passengerService).delete(any(Long.class));
+    }
+
+    @When("Delete passenger by id")
+    public void deletePassengerById() {
+        responseEntityDelete = passengerController.delete(1L);
+    }
+
+    @Then("A response with HTTP status 204 No Content")
+    public void aResponseWithHttpStatusNoContent() {
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, responseEntityDelete.getStatusCode());
+    }
+    @Given("The request for reading passengers by last name")
+    public void theRequestForReadingPassengersByLastName() {
+        String lastName = "Doe";
+        List<PassengerDto> passengers = Arrays.asList(
+                new PassengerDto(1, "John", lastName),
+                new PassengerDto(2, "Jane", lastName)
+        );
+        when(passengerService.readByLastName(lastName)).thenReturn(passengers);
+    }
+
+    @When("Read passengers by last name")
+    public void readPassengersByLastName() {
+        String lastName = "Doe";
+        responseEntityLastName = passengerController.readByLastName(lastName);
+    }
+
+    @Then("A response with a list of passengers with the last name")
+    public void aResponseWithListOfPassengersWithTheLastName() {
+        List<PassengerDto> passengers = responseEntityLastName.getBody();
+        Assertions.assertEquals(HttpStatus.OK, responseEntityLastName.getStatusCode());
+        Assertions.assertNotNull(passengers);
+        Assertions.assertFalse(passengers.isEmpty());
+        Assertions.assertTrue(passengers.stream().allMatch(p -> p.getLastName().equals("Doe")));
+    }
 }

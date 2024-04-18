@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 public class PassengerParametrizedTests {
     private PassengerService passengerService = mock(PassengerService.class);
     private KafkaProducer<String, String> producer = mock(KafkaProducer.class);
