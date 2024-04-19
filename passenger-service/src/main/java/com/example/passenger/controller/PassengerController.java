@@ -98,8 +98,8 @@ public class PassengerController {
     }
     @GetMapping("/available")
     public List<PassengerDto> getAvailablePassengers() {
-        List<PassengerDto> passengerDTOs = passengerService.findAvailablePassenger();
-        return passengerDTOs;
+        List<PassengerDto> passengerDtos = passengerService.findAvailablePassenger();
+        return passengerDtos;
     }
     @PutMapping("/{id}/toggle-availability")
     public ResponseEntity<PassengerDto> toggleDriverAvailability(@PathVariable("id") Long id) {
