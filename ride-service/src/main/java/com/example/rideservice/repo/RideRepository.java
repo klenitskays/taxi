@@ -1,6 +1,5 @@
 package com.example.rideservice.repo;
 
-import com.example.rideservice.dto.RideDTO;
 import com.example.rideservice.entity.Ride;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

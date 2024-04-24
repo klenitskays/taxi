@@ -1,6 +1,6 @@
 package com.example.passenger.client;
 
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface PassengerClient {
 
     @GetMapping("/passenger/available")
-    List<PassengerDTO> getAvailablePassenger();
+    List<PassengerDto> getAvailablePassenger();
     @PutMapping("/passenger/{id}/toggle-availability")
     void togglePassengerAvailability(@PathVariable("id") Long id);
 }

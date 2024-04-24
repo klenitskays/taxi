@@ -1,23 +1,18 @@
 package com.example.passenger.controller;
 
-import com.example.passenger.dto.PassengerDTO;
+import com.example.passenger.dto.PassengerDto;
+import com.example.passenger.dto.PassengerDtoList;
 import com.example.passenger.service.PassengerService;
 import jakarta.annotation.PreDestroy;
-import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.List;
-import java.util.Properties;
 
 @RestController
 @RequestMapping("/passenger")
@@ -35,17 +30,15 @@ public class PassengerController {
     }
 
     @PostMapping
-    public ResponseEntity<PassengerDTO> create(@RequestBody PassengerDTO dto) {
-        PassengerDTO createdPassengerDTO = passengerService.create(dto);
+    public ResponseEntity<PassengerDto> create(@RequestBody PassengerDto dto) {
+        PassengerDto createdPassengerDTO = passengerService.create(dto);
 
         String message = "Новый пассажир создан: " + createdPassengerDTO.getFirstName() + " " + createdPassengerDTO.getLastName();
         ProducerRecord<String, String> record = new ProducerRecord<>(topicName, message);
         producer.send(record, (metadata, exception) -> {
             if (exception != null) {
-                // Обработка ошибки отправки сообщения
                 exception.printStackTrace();
             } else {
-                // Успешная отправка сообщения
                 System.out.println("Сообщение успешно отправлено в Kafka. Topic: " + metadata.topic() +
                         ", Partition: " + metadata.partition() + ", Offset: " + metadata.offset());
             }
@@ -54,16 +47,16 @@ public class PassengerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassengerDTO);
     }
 
-
     @GetMapping
-    public ResponseEntity<Page<PassengerDTO>> getAllPassengers(Pageable pageable) {
-        Page<PassengerDTO> passengerPage = passengerService.getAllPassengers(pageable);
-        return ResponseEntity.ok(passengerPage);
+    public ResponseEntity<PassengerDtoList> getAllPassengers() {
+        List<PassengerDto> passengerList = passengerService.getAllPassengers();
+        PassengerDtoList passengerDtoList = new PassengerDtoList(passengerList);
+        return ResponseEntity.ok(passengerDtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PassengerDTO> readById(@PathVariable Long id) {
-        PassengerDTO passengerDTO = passengerService.readById(id);
+    public ResponseEntity<PassengerDto> readById(@PathVariable Long id) {
+        PassengerDto passengerDTO = passengerService.readById(id);
         if (passengerDTO != null) {
             return ResponseEntity.ok(passengerDTO);
         } else {
@@ -72,8 +65,8 @@ public class PassengerController {
     }
 
     @GetMapping("/lastName")
-    public ResponseEntity<List<PassengerDTO>> readByLastName(@RequestParam("lastName") String lastName) {
-        List<PassengerDTO> passengers = passengerService.readByLastName(lastName);
+    public ResponseEntity<List<PassengerDto>> readByLastName(@RequestParam("lastName") String lastName) {
+        List<PassengerDto> passengers = passengerService.readByLastName(lastName);
         if (!passengers.isEmpty()) {
             return ResponseEntity.ok(passengers);
         } else {
@@ -82,11 +75,11 @@ public class PassengerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PassengerDTO> update(
-            @RequestBody PassengerDTO dto,
+    public ResponseEntity<PassengerDto> update(
+            @RequestBody PassengerDto dto,
             @PathVariable Long id
     ) {
-        PassengerDTO updatedPassengerDTO = passengerService.update(dto, id);
+        PassengerDto updatedPassengerDTO = passengerService.update(dto, id);
         if (updatedPassengerDTO != null) {
             return ResponseEntity.ok(updatedPassengerDTO);
         } else {
@@ -96,17 +89,21 @@ public class PassengerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        passengerService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            passengerService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
     @GetMapping("/available")
-    public List<PassengerDTO> getAvailablePassengers() {
-        List<PassengerDTO> passengerDTOs = passengerService.findAvailablePassenger();
-        return passengerDTOs;
+    public List<PassengerDto> getAvailablePassengers() {
+        List<PassengerDto> passengerDtos = passengerService.findAvailablePassenger();
+        return passengerDtos;
     }
     @PutMapping("/{id}/toggle-availability")
-    public ResponseEntity<PassengerDTO> toggleDriverAvailability(@PathVariable("id") Long id) {
-        PassengerDTO updatedPassengerDTO = passengerService.toggleAvailability(id);
+    public ResponseEntity<PassengerDto> toggleDriverAvailability(@PathVariable("id") Long id) {
+        PassengerDto updatedPassengerDTO = passengerService.toggleAvailability(id);
         if (updatedPassengerDTO != null) {
             return ResponseEntity.ok(updatedPassengerDTO);
         } else {

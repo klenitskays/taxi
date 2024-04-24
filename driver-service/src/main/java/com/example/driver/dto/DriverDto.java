@@ -3,7 +3,7 @@ package com.example.driver.dto;
 import lombok.Data;
 
 @Data
-public class DriverDTO  {
+public class DriverDto  {
     private int id;
     private String firstName;
     private String lastName;

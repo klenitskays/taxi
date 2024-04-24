@@ -1,6 +1,6 @@
 package com.example.rideservice.mapper;
 
-import com.example.rideservice.dto.RideDTO;
+import com.example.rideservice.dto.RideDto;
 import com.example.rideservice.entity.Ride;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,13 +10,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RideMapper {
 
-    RideDTO toRideDTO(Ride ride);
+    RideDto toRideDto(Ride ride);
 
-    List<RideDTO> toRideDTO(List<Ride> rides);
+    List<RideDto> toRideDto(List<Ride> rides);
 
-    Ride toRide(RideDTO dto);
+    Ride toRide(RideDto dto);
 
     @Mapping(target = "startLatitude", source = "startLongitude")
     @Mapping(target = "destinationLatitude", source = "destinationLongitude")
-    void updateRideFromDTO(RideDTO dto, @MappingTarget Ride ride);
+    void updateRideFromDto(RideDto dto, @MappingTarget Ride ride);
 }
