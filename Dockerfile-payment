@@ -1,0 +1,11 @@
+FROM openjdk:8-jdk-buster
+
+COPY .mvn .mvn
+COPY mvnw .
+COPY pom.xml .
+COPY payment-service payment-service
+
+RUN apt-get update && apt-get install -y curl
+RUN export PATH=/apache-maven-3.6.3/bin:$PATH
+
+CMD ["mvn clean install -DskipTests"]

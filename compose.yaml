@@ -26,6 +26,7 @@ services:
       - 'POSTGRES_USER=postgres'
     ports:
       - '5454:5432'
+
   payment-postgres:
     image: 'postgres:latest'
     environment:
@@ -34,3 +35,48 @@ services:
       - 'POSTGRES_USER=postgres'
     ports:
       - '5455:5432'
+
+  driver:
+    image: taxi:driver
+    ports:
+      - '5555:5555'
+    environment:
+      DB_HOST: "driver-postgres"
+      DB_PORT: "5442"
+      DB_DATABASE: "driverdb"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "postgre"
+
+
+  passenger:
+    image: taxi:passenger
+    ports:
+      - '4444:4444'
+    environment:
+      DB_HOST: "passenger-postgres"
+      DB_PORT: "5452"
+      DB_DATABASE: "passengerdb"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "postgre"
+
+  ride:
+    image: taxi:ride
+    ports:
+      - '3333:3333'
+    environment:
+      DB_HOST: "ride-postgres"
+      DB_PORT: "5454"
+      DB_DATABASE: "ridedb"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "postgre"
+
+  payment:
+    image: taxi:payment
+    ports:
+      - '1111:1111'
+    environment:
+      DB_HOST: "payment-postgres"
+      DB_PORT: "5455"
+      DB_DATABASE: "paymentdb"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "postgre"
