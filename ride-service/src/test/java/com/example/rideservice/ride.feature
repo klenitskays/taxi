@@ -20,3 +20,8 @@ Feature: Ride Service
     Given The request for completing a ride
     When Complete the ride
     Then A response with the completed ride details
+
+  Scenario: Deleting a ride by ID
+    Given The request for deleting a ride by ID
+    When Delete a ride by ID
+    Then A response with HTTP status 204 No Content

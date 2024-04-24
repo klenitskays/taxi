@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
-public class RideStepDefinitions {
+public class EndToEndTests {
 
     @Mock
     private RideService rideService;
@@ -32,6 +32,8 @@ public class RideStepDefinitions {
     private RideController rideController;
 
     private ResponseEntity<RideDto> responseEntity;
+    private ResponseEntity<Void> responseEntityDelete;
+
     private RideDto rideDto;
 
     @BeforeEach
@@ -39,7 +41,7 @@ public class RideStepDefinitions {
         MockitoAnnotations.initMocks(this);
     }
 
-    public RideStepDefinitions() {
+    public EndToEndTests() {
         MockitoAnnotations.openMocks(this);
         rideController = new RideController(rideService);
     }
@@ -137,6 +139,19 @@ public class RideStepDefinitions {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
         assertEquals(1, responseEntity.getBody().getId());
+    }
+    @Given("The request for deleting a ride by ID")
+    public void theRequestForDeletingARideByID() {
+    }
+
+    @When("Delete a ride by ID")
+    public void deleteARideByID() {
+        responseEntityDelete = rideController.deleteRide(1);
+    }
+
+    @Then("A response with HTTP status 204 No Content")
+    public void aResponseWithHttpStatusNoContent() {
+        assertEquals(HttpStatus.NO_CONTENT, responseEntityDelete.getStatusCode());
     }
 
 }
