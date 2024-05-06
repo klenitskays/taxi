@@ -97,7 +97,7 @@ services:
 
   ride:
     build:
-      dockerfile: ./ride-service/Dockerfile
+      dockerfile: ./Dockerfile-ride
     ports:
       - '3333:3333'
     environment:

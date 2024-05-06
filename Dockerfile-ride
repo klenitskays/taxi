@@ -1,0 +1,16 @@
+FROM maven:3.9.6-eclipse-temurin-8-focal AS build
+RUN mkdir /taxi
+COPY . /taxi
+WORKDIR /taxi/ride-service
+RUN mvn clean package
+RUN mvn clean install
+
+
+
+FROM openjdk:17
+COPY --from=build taxi/ride-service/target/ride-service-0.0.1-SNAPSHOT.jar ride-service.jar
+ENTRYPOINT ["java", "-jar", "ride-service.jar"]
+
+
+
+
