@@ -1,7 +1,7 @@
 package com.example.rideservice.impl;
 
-import com.example.driver.client.DriverClient;
-import com.example.driver.dto.DriverDto;
+/*import com.example.driver.client.DriverClient;
+import com.example.driver.dto.DriverDto;*/
 import com.example.rideservice.dto.RideDto;
 import com.example.rideservice.entity.Ride;
 import com.example.rideservice.mapper.RideMapper;
@@ -28,7 +28,7 @@ public class RideServiceImpl implements RideService {
 
     private final RideRepository rideRepository;
     private final RideMapper rideMapper;
-    @Override
+   /* @Override
     public RideDto createRide(@Valid RideDto dto) {
         Ride ride = rideMapper.toRide(dto);
         ride.setStatus(RideStatus.CREATED);
@@ -37,7 +37,7 @@ public class RideServiceImpl implements RideService {
         Ride savedRide = rideRepository.save(ride);
 
         return rideMapper.toRideDto(savedRide);
-    }
+    }*/
     @Override
     public Page<RideDto> getAllRides(Pageable pageable) {
         Page<Ride> ridePage = rideRepository.findAll(pageable);
@@ -83,7 +83,7 @@ public class RideServiceImpl implements RideService {
     public void deleteRide(Integer id) {
         rideRepository.deleteById(id);
     }
-    @Override
+   /* @Override
     public RideDto acceptRide(Long rideId) {
         Optional<Ride> rideOptional = rideRepository.findById(Math.toIntExact(rideId));
         if (rideOptional.isPresent()) {
@@ -96,8 +96,8 @@ public class RideServiceImpl implements RideService {
         } else {
             return null;
         }
-    }
-
+    }*/
+/*
     @Override
     public List<DriverDto> getAvailableDrivers() {
         DriverClient driverClient = Feign.builder()
@@ -117,7 +117,7 @@ public class RideServiceImpl implements RideService {
 
         driverClient.toggleDriverAvailability(driverId);
     }
-
+*/
 
     @Override
     public RideDto startRide(Integer rideId) {
@@ -146,7 +146,7 @@ public class RideServiceImpl implements RideService {
         }
     }
 
-    @Override
+/*    @Override
     public RideDto completeRide(Integer rideId) {
         Optional<Ride> rideOptional = rideRepository.findById(rideId);
         if (rideOptional.isPresent()) {
@@ -159,5 +159,5 @@ public class RideServiceImpl implements RideService {
         } else {
             return null;
         }
-    }
+    }*/
 }

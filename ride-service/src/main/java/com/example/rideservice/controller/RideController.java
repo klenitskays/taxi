@@ -1,12 +1,12 @@
 package com.example.rideservice.controller;
 
-import com.example.driver.client.DriverClient;
+/*import com.example.driver.client.DriverClient;
 import com.example.driver.dto.DriverDto;
 import com.example.passenger.client.PassengerClient;
 import com.example.passenger.dto.PassengerDto;
 import com.example.paymentservice.client.ChargeClient;
 import com.example.paymentservice.entity.ChargeRequest;
-import com.example.paymentservice.entity.Payment;
+import com.example.paymentservice.entity.Payment;*/
 import com.example.rideservice.dto.RideDto;
 import com.example.rideservice.service.RideService;
 import feign.Feign;
@@ -29,7 +29,7 @@ import java.util.List;
 public class RideController {
 
     private final RideService rideService;
-
+/*
     @PostMapping
     public ResponseEntity<RideDto> createRide(@RequestBody RideDto dto) {
         PassengerClient passengerClient = Feign.builder()
@@ -48,7 +48,8 @@ public class RideController {
         }
 
         return ResponseEntity.notFound().build();
-    }
+    }*/
+
     @GetMapping
     public ResponseEntity<Page<RideDto>> getAllRides(Pageable pageable) {
         Page<RideDto> ridePage = rideService.getAllRides(pageable);
@@ -83,7 +84,7 @@ public class RideController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PutMapping("/{rideId}/accept")
+    /*@PutMapping("/{rideId}/accept")
     public ResponseEntity<RideDto> acceptRide(@PathVariable("rideId") Integer rideId) {
         RideDto updatedRideDto = rideService.acceptRide(Long.valueOf(rideId));
         if (updatedRideDto != null && updatedRideDto.getDriverId() != null && updatedRideDto.getDriverId() == 0) {
@@ -100,6 +101,7 @@ public class RideController {
 
         return ResponseEntity.notFound().build();
     }
+    */
     @PutMapping("/{id}")
     public ResponseEntity<RideDto> updateRide(@RequestBody RideDto dto, @PathVariable Integer id) {
         RideDto updatedRideDto = rideService.updateRide(dto, id);
@@ -120,7 +122,7 @@ public class RideController {
         }
     }
 
-    @PostMapping("/{rideId}/complete")
+    /*@PostMapping("/{rideId}/complete")
     public ResponseEntity<RideDto> completeRide(@PathVariable("rideId") Integer rideId) {
         RideDto completedRide = rideService.completeRide(rideId);
         if (completedRide != null) {
@@ -159,7 +161,7 @@ public class RideController {
         }
     }
 
-
+*/
     @PostMapping("/{rideId}/start")
     public ResponseEntity<RideDto> startRide(@PathVariable Integer rideId) {
         RideDto inProgressRide = rideService.startRide(rideId);

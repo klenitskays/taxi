@@ -1,6 +1,6 @@
 package com.example.rideservice.service;
 
-import com.example.driver.dto.DriverDto;
+/*import com.example.driver.dto.DriverDto;*/
 import com.example.rideservice.dto.RideDto;
 import com.example.rideservice.status.RideStatus;
 import jakarta.validation.Valid;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface RideService {
-    RideDto createRide(@Valid RideDto rideDto);
+/*    RideDto createRide(@Valid RideDto rideDto);*/
     Page<RideDto> getAllRides(Pageable pageable);
 
     RideDto getRideById(Integer id);
@@ -25,10 +25,10 @@ public interface RideService {
 
     RideDto cancelRide(Integer rideId);
 
-    RideDto completeRide(Integer rideId);
+  /*  RideDto completeRide(Integer rideId);
 
     RideDto acceptRide(Long rideId);
     List<DriverDto> getAvailableDrivers();
-    void toggleDriverAvailability(Long driverId);
+    void toggleDriverAvailability(Long driverId);*/
     RideDto startRide(Integer rideId);
 }
